@@ -1,8 +1,8 @@
 import { Response } from "express"
 
 const sendResponse = <T>(res: Response, jsonData: {
-    statusCode: number,
-    success: boolean,
+    statusCode?: number,
+    success?: boolean,
     message: string,
     meta?: {
         page: number,
@@ -11,8 +11,8 @@ const sendResponse = <T>(res: Response, jsonData: {
     },
     data: T | null | undefined
 }) => {
-    res.status(jsonData.statusCode).json({
-        success: jsonData.success,
+    res.status(jsonData.statusCode || 200).json({
+        success: jsonData.success || true,
         message: jsonData.message,
         meta: jsonData.meta || null || undefined,
         data: jsonData.data || null || undefined
