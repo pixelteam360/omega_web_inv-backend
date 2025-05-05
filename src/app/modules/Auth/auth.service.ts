@@ -8,7 +8,6 @@ import httpStatus from "http-status";
 import crypto from "crypto";
 import { emailSender } from "../../../shared/emailSender";
 
-// user login
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUnique({
     where: {
@@ -43,7 +42,6 @@ const loginUser = async (payload: { email: string; password: string }) => {
   return { token: accessToken };
 };
 
-// change password
 const changePassword = async (
   userToken: string,
   newPassword: string,
@@ -226,7 +224,7 @@ const verifyForgotPasswordOtp = async (payload: {
   ) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid OTP");
   }
-  
+
   // Update the user's OTP, OTP expiration, and verification status
   await prisma.user.update({
     where: { id: user.id },
@@ -239,7 +237,6 @@ const verifyForgotPasswordOtp = async (payload: {
   return { message: "OTP verification successful" };
 };
 
-// reset password
 const resetPassword = async (payload: { password: string; email: string }) => {
   // Check if the user exists
   const user = await prisma.user.findUnique({

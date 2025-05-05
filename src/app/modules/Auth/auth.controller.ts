@@ -14,8 +14,8 @@ const loginUser = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
 const logoutUser = catchAsync(async (req, res) => {
-  // Clear the token cookie
   res.clearCookie("token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -30,8 +30,6 @@ const logoutUser = catchAsync(async (req, res) => {
   });
 });
 
-
-// change password
 const changePassword = catchAsync(async (req, res) => {
   const userToken = req.headers.authorization;
   const { oldPassword, newPassword } = req.body;
@@ -49,7 +47,6 @@ const changePassword = catchAsync(async (req, res) => {
   });
 });
 
-// forgot password
 const forgotPassword = catchAsync(async (req, res) => {
   const result = await AuthServices.forgotPassword(req.body);
 

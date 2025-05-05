@@ -8,14 +8,12 @@ import { authValidation } from "./auth.validation";
 
 const router = express.Router();
 
-// user login route
 router.post(
   "/login",
   validateRequest(UserValidation.UserLoginValidationSchema),
   AuthController.loginUser
 );
 
-// user logout route
 router.post("/logout", AuthController.logoutUser);
 
 router.put(
