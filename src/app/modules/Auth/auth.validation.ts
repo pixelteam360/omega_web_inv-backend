@@ -5,6 +5,16 @@ const changePasswordValidationSchema = z.object({
   newPassword: z.string().min(8),
 });
 
-export const authValidation={
-    changePasswordValidationSchema
-}
+const otpValidationSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  otp: z
+    .number({ invalid_type_error: "OTP must be a 5-digit number." })
+    .int()
+    .gte(10000, { message: "OTP must be a 5-digit number." })
+    .lte(99999, { message: "OTP must be a 5-digit number." }),
+});
+
+export const authValidation = {
+  changePasswordValidationSchema,
+  otpValidationSchema,
+};
