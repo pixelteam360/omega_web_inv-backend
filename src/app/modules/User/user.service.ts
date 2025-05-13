@@ -1,21 +1,18 @@
 import prisma from "../../../shared/prisma";
 import ApiError from "../../../errors/ApiErrors";
-import { IUser, IUserFilterRequest } from "./user.interface";
 import * as bcrypt from "bcrypt";
 import { IPaginationOptions } from "../../../interfaces/paginations";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 import { Prisma, User } from "@prisma/client";
 import { userSearchAbleFields } from "./user.costant";
 import config from "../../../config";
-import httpStatus from "http-status";
-import { Request } from "express";
 import { fileUploader } from "../../../helpars/fileUploader";
+import { IUserFilterRequest, TUser } from "./user.interface";
 
-// Create a new user in the database.
-const createUserIntoDb = async (payload: User) => {
+const createUserIntoDb = async (payload: TUser) => {
   const existingUser = await prisma.user.findFirst({
     where: {
-      OR: [{ email: payload.email }, { username: payload.username }],
+      email: payload.email,
     },
   });
 
@@ -24,12 +21,6 @@ const createUserIntoDb = async (payload: User) => {
       throw new ApiError(
         400,
         `User with this email ${payload.email} already exists`
-      );
-    }
-    if (existingUser.username === payload.username) {
-      throw new ApiError(
-        400,
-        `User with this username ${payload.username} already exists`
       );
     }
   }
@@ -52,7 +43,6 @@ const createUserIntoDb = async (payload: User) => {
   return result;
 };
 
-// reterive all users from the database also searcing anf filetering
 const getUsersFromDb = async (
   params: IUserFilterRequest,
   options: IPaginationOptions
@@ -98,9 +88,7 @@ const getUsersFromDb = async (
     select: {
       id: true,
       fullName: true,
-      username: true,
       email: true,
-      profileImage: true,
       role: true,
       createdAt: true,
       updatedAt: true,
@@ -123,22 +111,33 @@ const getUsersFromDb = async (
   };
 };
 
-// update profile by user won profile uisng token or email and id
+const getMyProfile = async (userEmail: string) => {
+  const userProfile = await prisma.user.findUnique({
+    where: {
+      email: userEmail,
+    },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  return userProfile;
+};
+
 const updateProfile = async (payload: User, imageFile: any, userId: string) => {
   const result = await prisma.$transaction(async (prisma) => {
-    // upload image
     let image = "";
     if (imageFile) {
       image = (await fileUploader.uploadToCloudinary(imageFile)).Location;
     }
 
-    //create user profile
     const createUserProfile = await prisma.user.update({
       where: { id: userId },
-      data: {
-        ...payload,
-        profileImage: image,
-      },
+      data: { ...payload, image },
     });
 
     return createUserProfile;
@@ -147,9 +146,9 @@ const updateProfile = async (payload: User, imageFile: any, userId: string) => {
   return result;
 };
 
-
 export const userService = {
   createUserIntoDb,
   getUsersFromDb,
+  getMyProfile,
   updateProfile,
 };

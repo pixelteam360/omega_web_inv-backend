@@ -1,23 +1,21 @@
-import { UserRole, UserStatus } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 
-export interface IUser {
+export type TUser = {
   id?: string;
+  fullName: string;
   email: string;
-  firstName: string;
-  lastName: string;
   password: string;
   role: UserRole;
-  profession:string;
-  promoCode:string;
-  status: UserStatus;
-  isDeleted:boolean;
+  isDeleted: boolean;
+  expirationOtp?: Date;
+  otp?: number;
   createdAt?: Date;
   updatedAt?: Date;
-}
+};
 
 export type IUserFilterRequest = {
   name?: string | undefined;
   email?: string | undefined;
   contactNumber?: string | undefined;
   searchTerm?: string | undefined;
-}
+};

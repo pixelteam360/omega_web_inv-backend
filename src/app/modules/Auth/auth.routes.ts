@@ -8,46 +8,29 @@ import { authValidation } from "./auth.validation";
 
 const router = express.Router();
 
-// user login route
 router.post(
   "/login",
   validateRequest(UserValidation.UserLoginValidationSchema),
   AuthController.loginUser
 );
 
-// user logout route
 router.post("/logout", AuthController.logoutUser);
-
-router.get(
-  "/profile",
-  auth(UserRole.ADMIN, UserRole.USER),
-  AuthController.getMyProfile
-);
 
 router.put(
   "/change-password",
-  auth(),
+  auth(UserRole.USER, UserRole.ADMIN),
   validateRequest(authValidation.changePasswordValidationSchema),
   AuthController.changePassword
 );
 
-
+router.post("/forgot-password", AuthController.forgotPassword);
+router.post("/resend-otp", AuthController.resendOtp);
 router.post(
-  '/forgot-password',
-  AuthController.forgotPassword
-);
-router.post(
-  '/resend-otp',
-  AuthController.resendOtp
-);
-router.post(
-  '/verify-otp',
+  "/verify-otp",
+  validateRequest(authValidation.otpValidationSchema),
   AuthController.verifyForgotPasswordOtp
 );
 
-router.post(
-  '/reset-password',
-  AuthController.resetPassword
-)
+router.post("/reset-password", AuthController.resetPassword);
 
 export const AuthRoutes = router;
