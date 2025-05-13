@@ -4,10 +4,10 @@ import * as bcrypt from "bcrypt";
 import { IPaginationOptions } from "../../../interfaces/paginations";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 import { Prisma, User } from "@prisma/client";
-import { userSearchAbleFields } from "./user.costant";
+import { userSearchAbleFields } from "./demo.costant";
 import config from "../../../config";
 import { fileUploader } from "../../../helpars/fileUploader";
-import { IUserFilterRequest, TUser } from "./user.interface";
+import { IUserFilterRequest, TUser } from "./demo.interface";
 
 const createUserIntoDb = async (payload: TUser) => {
   const existingUser = await prisma.user.findFirst({
@@ -111,11 +111,9 @@ const getUsersFromDb = async (
   };
 };
 
-const getMyProfile = async (userEmail: string) => {
+const getSingleUser = async (id: string) => {
   const userProfile = await prisma.user.findUnique({
-    where: {
-      email: userEmail,
-    },
+    where: {id},
     select: {
       id: true,
       fullName: true,
@@ -149,6 +147,6 @@ const updateProfile = async (payload: User, imageFile: any, userId: string) => {
 export const userService = {
   createUserIntoDb,
   getUsersFromDb,
-  getMyProfile,
+  getSingleUser,
   updateProfile,
 };

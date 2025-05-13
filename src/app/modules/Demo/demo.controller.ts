@@ -1,8 +1,8 @@
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
-import { userService } from "./user.service";
+import { userService } from "./demo.service";
 import pick from "../../../shared/pick";
-import { userFilterableFields } from "./user.costant";
+import { userFilterableFields } from "./demo.costant";
 
 const createUser = catchAsync(async (req, res) => {
   const result = await userService.createUserIntoDb(req.body);
@@ -22,9 +22,8 @@ const getUsers = catchAsync(async (req, res) => {
   });
 });
 
-const getMyProfile = catchAsync(async (req, res) => {
-  const { email } = req.user;
-  const result = await userService.getMyProfile(email);
+const getSingleUser = catchAsync(async (req, res) => {
+  const result = await userService.getSingleUser(req.params.id);
   sendResponse(res, {
     message: "User profile retrieved successfully",
     data: result,
@@ -43,6 +42,6 @@ const updateProfile = catchAsync(async (req, res) => {
 export const userController = {
   createUser,
   getUsers,
-  getMyProfile,
+  getSingleUser,
   updateProfile,
 };

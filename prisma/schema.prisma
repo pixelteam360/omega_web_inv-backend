@@ -25,60 +25,22 @@ model User {
 }
 
 model Profile {
-  id                 String          @id @default(auto()) @map("_id") @db.ObjectId
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
   fullName           String
-  image              String?         @default("")
+  image              String?       @default("")
   maritalStatus      MaritalStatus
   location           String
-  maritalVerifyCount Int             @default(0)
-  redFlag            Int             @default(0)
-  yellowFlag         Int             @default(0)
-  greenFlag          Int             @default(0)
-  isDeleted          Boolean         @default(false)
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
-  userId             String          @db.ObjectId
-  user               User            @relation(fields: [userId], references: [id])
-  reviews            Review[]
-  profileReports     ProfileReport[]
+  maritalVerifyCount Int           @default(0)
+  redFlag            Int           @default(0)
+  yellowFlag         Int           @default(0)
+  greenFlag          Int           @default(0)
+  isDeleted          Boolean       @default(false)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  userId             String        @db.ObjectId
+  user               User          @relation(fields: [userId], references: [id])
 
   @@map("Profile")
-}
-
-model ProfileReport {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  message   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  profileId String   @db.ObjectId
-  profile   Profile  @relation(fields: [profileId], references: [id])
-
-  @@map("Profile-Report")
-}
-
-model Review {
-  id            String         @id @default(auto()) @map("_id") @db.ObjectId
-  message       String
-  flag          FlagType
-  isDeleted     Boolean        @default(false)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  profileId     String         @db.ObjectId
-  profile       Profile        @relation(fields: [profileId], references: [id])
-  reviewReports ReviewReport[]
-
-  @@map("Review")
-}
-
-model ReviewReport {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  message   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  reviewId  String   @db.ObjectId
-  review    Review   @relation(fields: [reviewId], references: [id])
-
-  @@map("Review-Report")
 }
 
 enum UserRole {
