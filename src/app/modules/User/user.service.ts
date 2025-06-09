@@ -24,6 +24,7 @@ const createUserIntoDb = async (payload: TUser) => {
       );
     }
   }
+
   const hashedPassword: string = await bcrypt.hash(
     payload.password,
     Number(config.bcrypt_salt_rounds)
@@ -34,9 +35,8 @@ const createUserIntoDb = async (payload: TUser) => {
     select: {
       id: true,
       email: true,
-      role: true,
-      createdAt: true,
-      updatedAt: true,
+      phone: true,
+      birth: true,
     },
   });
 
@@ -77,6 +77,7 @@ const getUsersFromDb = async (
   const result = await prisma.user.findMany({
     where: whereConditons,
     skip,
+    take: limit,
     orderBy:
       options.sortBy && options.sortOrder
         ? {
@@ -87,11 +88,9 @@ const getUsersFromDb = async (
           },
     select: {
       id: true,
-      fullName: true,
       email: true,
-      role: true,
-      createdAt: true,
-      updatedAt: true,
+      birth: true,
+      phone: true,
     },
   });
   const total = await prisma.user.count({
@@ -118,10 +117,9 @@ const getMyProfile = async (userEmail: string) => {
     },
     select: {
       id: true,
-      fullName: true,
       email: true,
-      createdAt: true,
-      updatedAt: true,
+      birth: true,
+      phone: true,
     },
   });
 
@@ -137,7 +135,7 @@ const updateProfile = async (payload: User, imageFile: any, userId: string) => {
 
     const createUserProfile = await prisma.user.update({
       where: { id: userId },
-      data: { ...payload, profileImage: image },
+      data: { ...payload },
     });
 
     return createUserProfile;

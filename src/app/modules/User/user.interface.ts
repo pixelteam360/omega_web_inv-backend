@@ -1,9 +1,11 @@
 import { UserRole } from "@prisma/client";
 
 export type TUser = {
-  id?: string;
-  fullName: string;
+  id: string;
   email: string;
+  phone: string;
+  birth: Date;
+  refferralCode?: string;
   password: string;
   role: UserRole;
   isDeleted: boolean;
@@ -14,8 +16,8 @@ export type TUser = {
 };
 
 export type IUserFilterRequest = {
-  name?: string | undefined;
+  phone?: string | undefined;
   email?: string | undefined;
-  contactNumber?: string | undefined;
+  birth?: string | undefined;
   searchTerm?: string | undefined;
 };

@@ -1,7 +1,9 @@
 import { z } from "zod";
 
 const CreateUserValidationSchema = z.object({
-  fullName: z.string(),
+  phone: z.string(),
+  birth: z.string(),
+  refferralCode: z.string().optional(),
   email: z.string().email("Invalid email address").min(1, "Email is required"), // Ensure email is provided and is valid
   password: z.string().min(8, "Password must be at least 8 characters long"),
 });

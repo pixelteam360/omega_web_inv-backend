@@ -8,39 +8,40 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  fullName      String
-  image         String?   @default("")
-  email         String    @unique
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  email         String     @unique
+  phone         String
+  birth         DateTime
+  refferralCode String?    @default("")
   password      String
-  isDeleted     Boolean   @default(false)
+  isDeleted     Boolean    @default(false)
   expirationOtp DateTime?
   otp           Int?
-  role          UserRole  @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  profile       Profile[]
+  role          UserRole   @default(USER)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  UserInfo      UserInfo[]
 
   @@map("Users")
 }
 
-model Profile {
-  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
-  fullName           String
-  image              String?       @default("")
-  maritalStatus      MaritalStatus
-  location           String
-  maritalVerifyCount Int           @default(0)
-  redFlag            Int           @default(0)
-  yellowFlag         Int           @default(0)
-  greenFlag          Int           @default(0)
-  isDeleted          Boolean       @default(false)
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
-  userId             String        @db.ObjectId
-  user               User          @relation(fields: [userId], references: [id])
+model UserInfo {
+  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  fullName          String
+  image             String?     @default("")
+  age               Int
+  gender            Gender
+  weight            Float
+  height            Float
+  fitnessGoal       FitnessGoal
+  dietaryPreference String
+  isDeleted         Boolean     @default(false)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  userId            String      @db.ObjectId
+  user              User        @relation(fields: [userId], references: [id])
 
-  @@map("Profile")
+  @@map("User-Info")
 }
 
 enum UserRole {
@@ -48,14 +49,14 @@ enum UserRole {
   USER
 }
 
-enum MaritalStatus {
-  SINGLE
-  MARRIED
-  IN_RELATIONSHIP
+enum FitnessGoal {
+  LOSE_WEIGHT
+  BUILD_MUSCLE
+  STAY_HEALTHY
+  OTHER
 }
 
-enum FlagType {
-  RED
-  GREEN
-  YELLOW
+enum Gender {
+  MALE
+  FEMALE
 }

@@ -1,8 +1,6 @@
 export interface IAdmin {
-  name: string;
-  username: string;
   email: string;
-  phoneNumber: string;
+  phone: string;
   password: string;
   role: Role;
 }
@@ -10,6 +8,4 @@ export interface IAdmin {
 export enum Role {
   ADMIN,
   USER,
-  SUPER_ADMIN,
-  TEACHER,
 }
