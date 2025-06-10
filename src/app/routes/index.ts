@@ -1,6 +1,9 @@
 import express from "express";
 import { AuthRoutes } from "../modules/Auth/auth.routes";
 import { UserRoutes } from "../modules/User/user.routes";
+import { UserInfoRoutes } from "../modules/UserInfo/userInfo.routes";
+import { FitnessGoalRoutes } from "../modules/FitnessGoal/fitnessGoal.routes";
+import { WorkoutRoutes } from "../modules/Workout/workout.routes";
 
 const router = express.Router();
 
@@ -10,8 +13,20 @@ const moduleRoutes = [
     route: UserRoutes,
   },
   {
+    path: "/users-info",
+    route: UserInfoRoutes,
+  },
+  {
     path: "/auth",
     route: AuthRoutes,
+  },
+  {
+    path: "/fitness-goal",
+    route: FitnessGoalRoutes,
+  },
+  {
+    path: "/workout",
+    route: WorkoutRoutes,
   },
 ];
 

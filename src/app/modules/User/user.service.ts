@@ -3,10 +3,9 @@ import ApiError from "../../../errors/ApiErrors";
 import * as bcrypt from "bcrypt";
 import { IPaginationOptions } from "../../../interfaces/paginations";
 import { paginationHelper } from "../../../helpars/paginationHelper";
-import { Prisma, User } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { userSearchAbleFields } from "./user.costant";
 import config from "../../../config";
-import { fileUploader } from "../../../helpars/fileUploader";
 import { IUserFilterRequest, TUser } from "./user.interface";
 
 const createUserIntoDb = async (payload: TUser) => {
@@ -91,6 +90,7 @@ const getUsersFromDb = async (
       email: true,
       birth: true,
       phone: true,
+      activePlan: true,
     },
   });
   const total = await prisma.user.count({
@@ -120,27 +120,18 @@ const getMyProfile = async (userEmail: string) => {
       email: true,
       birth: true,
       phone: true,
+      activePlan: true,
     },
   });
 
   return userProfile;
 };
 
-const updateProfile = async (payload: User, imageFile: any, userId: string) => {
-  const result = await prisma.$transaction(async (prisma) => {
-    let image = "";
-    if (imageFile) {
-      image = (await fileUploader.uploadToCloudinary(imageFile)).Location;
-    }
-
-    const createUserProfile = await prisma.user.update({
-      where: { id: userId },
-      data: { ...payload },
-    });
-
-    return createUserProfile;
+const updateProfile = async (payload: TUser, userId: string) => {
+  const result = await prisma.user.update({
+    where: { id: userId },
+    data: { phone: payload.phone, birth: payload.birth },
   });
-
   return result;
 };
 

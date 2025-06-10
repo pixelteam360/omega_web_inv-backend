@@ -33,7 +33,7 @@ const getMyProfile = catchAsync(async (req, res) => {
 
 const updateProfile = catchAsync(async (req, res) => {
   const { id } = req?.user;
-  const result = await userService.updateProfile(req.body, req.file, id);
+  const result = await userService.updateProfile(req.body, id);
   sendResponse(res, {
     message: "Profile updated successfully!",
     data: result,

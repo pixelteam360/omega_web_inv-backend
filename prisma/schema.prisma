@@ -8,40 +8,154 @@ datasource db {
 }
 
 model User {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
-  email         String     @unique
-  phone         String
-  birth         DateTime
-  refferralCode String?    @default("")
-  password      String
-  isDeleted     Boolean    @default(false)
-  expirationOtp DateTime?
-  otp           Int?
-  role          UserRole   @default(USER)
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  UserInfo      UserInfo[]
+  id              String            @id @default(auto()) @map("_id") @db.ObjectId
+  email           String            @unique
+  phone           String
+  birth           DateTime
+  activePlan      Boolean           @default(false)
+  refferralCode   String?           @default("")
+  password        String
+  isDeleted       Boolean           @default(false)
+  expirationOtp   DateTime?
+  otp             Int?
+  role            UserRole          @default(USER)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  userInfo        UserInfo[]
+  bodyMeasurement BodyMeasurement[]
+  weightProgress  WeightProgress[]
+  purchasedPlan   PurchasedPlan[]
 
   @@map("Users")
 }
 
 model UserInfo {
-  id                String      @id @default(auto()) @map("_id") @db.ObjectId
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
   fullName          String
-  image             String?     @default("")
+  image             String?  @default("")
   age               Int
   gender            Gender
   weight            Float
   height            Float
-  fitnessGoal       FitnessGoal
+  fitnessGoal       String
   dietaryPreference String
-  isDeleted         Boolean     @default(false)
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  userId            String      @db.ObjectId
-  user              User        @relation(fields: [userId], references: [id])
+  isDeleted         Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  userId            String   @db.ObjectId
+  user              User     @relation(fields: [userId], references: [id])
 
   @@map("User-Info")
+}
+
+model FitnessGoal {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("Fitness-Goal")
+}
+
+model BodyMeasurement {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  unit          Unit
+  startingChest Int
+  presentChest  Int
+  startingWaist Int
+  presentWaist  Int
+  startingHips  Int
+  presentHips   Int
+  startingArms  Int
+  presentArms   Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  userId        String   @db.ObjectId
+  user          User     @relation(fields: [userId], references: [id])
+
+  @@map("Body-Measurement")
+}
+
+model WeightProgress {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  weight    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("Weight-Progress")
+}
+
+model Plan {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  duration      Int
+  price         Float
+  isDeleted     Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  purchasedPlan PurchasedPlan[]
+  planFeatured  PlanFeatured[]
+
+  @@map("Plan")
+}
+
+model PlanFeatured {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  planId    String   @db.ObjectId
+  plan      Plan     @relation(fields: [planId], references: [id])
+
+  @@map("Plan-Featured")
+}
+
+model PurchasedPlan {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  paymentId  String
+  amount     Float
+  activePlan Boolean  @default(true)
+  stratDate  DateTime @default(now())
+  endDate    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     String   @db.ObjectId
+  planId     String   @db.ObjectId
+  User       User     @relation(fields: [userId], references: [id])
+  plan       Plan     @relation(fields: [planId], references: [id])
+
+  @@map("Purchased-Plan")
+}
+
+model Workout {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  icon        String   @default("")
+  title       String
+  thumbnail   String   @default("")
+  videos       String[]
+  duration    String
+  Kcal        Int
+  fitnessGoal String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("Workout")
+}
+
+model Nutrition {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  icon        String   @default("")
+  title       String
+  images      String[]
+  duration    String
+  Kcal        Int
+  fitnessGoal String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("Nutrition")
 }
 
 enum UserRole {
@@ -49,14 +163,14 @@ enum UserRole {
   USER
 }
 
-enum FitnessGoal {
-  LOSE_WEIGHT
-  BUILD_MUSCLE
-  STAY_HEALTHY
-  OTHER
-}
-
 enum Gender {
   MALE
   FEMALE
+}
+
+enum Unit {
+  CM
+  IN
+  KG
+  LB
 }

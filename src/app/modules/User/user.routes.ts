@@ -21,12 +21,6 @@ router
   .get(auth(UserRole.ADMIN, UserRole.USER), userController.getMyProfile)
   .put(
     auth(UserRole.ADMIN, UserRole.USER),
-    fileUploader.uploadSingle,
-    (req: Request, res: Response, next: NextFunction) => {
-      req.body = JSON.parse(req.body.data);
-      next();
-    },
-    validateRequest(UserValidation.userUpdateSchema),
     userController.updateProfile
   );
 

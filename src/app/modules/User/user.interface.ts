@@ -5,6 +5,7 @@ export type TUser = {
   email: string;
   phone: string;
   birth: Date;
+  activePlan: boolean;
   refferralCode?: string;
   password: string;
   role: UserRole;
