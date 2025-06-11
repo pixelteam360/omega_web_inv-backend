@@ -18,7 +18,9 @@ const createWorkout = catchAsync(async (req, res) => {
       : undefined;
 
   const videoFile =
-    Array.isArray(files?.videos) && files.videos.length > 0 ? files.videos : [];
+    Array.isArray(files?.video) && files.video.length > 0
+      ? files.video[0]
+      : undefined;
 
   const result = await WorkoutService.createWorkoutIntoDb(
     req.body,
@@ -64,7 +66,9 @@ const updateWorkout = catchAsync(async (req, res) => {
       : undefined;
 
   const videoFile =
-    Array.isArray(files?.videos) && files.videos.length > 0 ? files.videos : [];
+    Array.isArray(files?.video) && files.video.length > 0
+      ? files.video[0]
+      : undefined;
 
   const result = await WorkoutService.updateWorkout(
     req.body,
@@ -92,5 +96,5 @@ export const WorkoutController = {
   getWorkouts,
   getSingleWorkout,
   updateWorkout,
-  deleteWorkout
+  deleteWorkout,
 };

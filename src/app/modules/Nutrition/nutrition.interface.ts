@@ -1,11 +1,10 @@
 import { UserRole } from "@prisma/client";
 
-export type TWorkout = {
+export type TNutrition = {
   id?: string;
   icon: string;
   title: string;
-  thumbnail: string;
-  video: string
+  images: string[];
   duration: string;
   Kcal: number;
   fitnessGoal: string;
@@ -13,7 +12,7 @@ export type TWorkout = {
   updatedAt?: Date;
 };
 
-export type IWorkoutFilterRequest = {
+export type INutritionFilterRequest = {
   title?: string | undefined;
   fitnessGoal?: string | undefined;
   searchTerm?: string | undefined;

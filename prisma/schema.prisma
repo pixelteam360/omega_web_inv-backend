@@ -134,7 +134,7 @@ model Workout {
   icon        String   @default("")
   title       String
   thumbnail   String   @default("")
-  videos       String[]
+  video       String
   duration    String
   Kcal        Int
   fitnessGoal String
@@ -145,17 +145,32 @@ model Workout {
 }
 
 model Nutrition {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  icon        String   @default("")
-  title       String
-  images      String[]
-  duration    String
-  Kcal        Int
-  fitnessGoal String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  icon           String          @default("")
+  title          String
+  mealTime       MealTime
+  NutritionTips  String
+  fitnessGoal    String?         @default("")
+  document       String?         @default("")
+  video          String?         @default("")
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  nutritionItems NutritionItem[]
 
   @@map("Nutrition")
+}
+
+model NutritionItem {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  images      String
+  quantity    String
+  Kcal        Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  nutritionId String    @db.ObjectId
+  nutrition   Nutrition @relation(fields: [nutritionId], references: [id])
+
+  @@map("Nutrition-Item")
 }
 
 enum UserRole {
@@ -173,4 +188,11 @@ enum Unit {
   IN
   KG
   LB
+}
+
+enum MealTime {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
 }

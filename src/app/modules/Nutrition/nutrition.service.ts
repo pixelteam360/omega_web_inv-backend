@@ -4,15 +4,14 @@ import { IPaginationOptions } from "../../../interfaces/paginations";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 import { Prisma } from "@prisma/client";
 import { fileUploader } from "../../../helpars/fileUploader";
-import { IWorkoutFilterRequest, TWorkout } from "./workout.interface";
+import { INutritionFilterRequest, TNutrition } from "./nutrition.interface";
 import httpStatus from "http-status";
-import { workoutSearchAbleFields } from "./workout.costant";
+import { nutritionSearchAbleFields } from "./nutrition.costant";
 
-const createWorkoutIntoDb = async (
-  payload: TWorkout,
-  thumbnailFile: any,
+const createNutritionIntoDb = async (
+  payload: TNutrition,
   iconFile: any,
-  videoFile: any
+  imageFile: any
 ) => {
   const fitnessGoal = await prisma.fitnessGoal.findFirst({
     where: { title: payload.fitnessGoal },
@@ -22,8 +21,8 @@ const createWorkoutIntoDb = async (
     throw new ApiError(httpStatus.NOT_FOUND, "Fitness Goal not found");
   }
 
-  if (!videoFile || videoFile.length < 1) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Video file not found");
+  if (!imageFile || imageFile.length < 1) {
+    throw new ApiError(httpStatus.NOT_FOUND, "iamge file not found");
   }
 
   let icon = "";
@@ -31,33 +30,34 @@ const createWorkoutIntoDb = async (
     icon = (await fileUploader.uploadToDigitalOcean(iconFile)).Location;
   }
 
-  let thumbnail = "";
-  if (thumbnailFile) {
-    thumbnail = (await fileUploader.uploadToDigitalOcean(thumbnailFile))
-      .Location;
-  }
+  const images = await Promise.all(
+    imageFile.map(async (image: any) => {
+      const videoUrl = (await fileUploader.uploadToDigitalOcean(image))
+        .Location;
 
-  const video = (await fileUploader.uploadToDigitalOcean(videoFile)).Location;
+      return videoUrl;
+    })
+  );
 
-  const result = await prisma.workout.create({
-    data: { ...payload, icon, video, thumbnail },
+  const result = await prisma.nutrition.create({
+    data: { ...payload, icon, images },
   });
 
   return result;
 };
 
-const getWorkoutsFromDb = async (
-  params: IWorkoutFilterRequest,
+const getNutritionsFromDb = async (
+  params: INutritionFilterRequest,
   options: IPaginationOptions
 ) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = params;
 
-  const andCondions: Prisma.WorkoutWhereInput[] = [];
+  const andCondions: Prisma.NutritionWhereInput[] = [];
 
   if (params.searchTerm) {
     andCondions.push({
-      OR: workoutSearchAbleFields.map((field) => ({
+      OR: nutritionSearchAbleFields.map((field) => ({
         [field]: {
           contains: params.searchTerm,
           mode: "insensitive",
@@ -75,9 +75,9 @@ const getWorkoutsFromDb = async (
       })),
     });
   }
-  const whereConditons: Prisma.WorkoutWhereInput = { AND: andCondions };
+  const whereConditons: Prisma.NutritionWhereInput = { AND: andCondions };
 
-  const result = await prisma.workout.findMany({
+  const result = await prisma.nutrition.findMany({
     where: whereConditons,
     skip,
     take: limit,
@@ -90,7 +90,7 @@ const getWorkoutsFromDb = async (
             createdAt: "desc",
           },
   });
-  const total = await prisma.workout.count({
+  const total = await prisma.nutrition.count({
     where: whereConditons,
   });
 
@@ -104,8 +104,8 @@ const getWorkoutsFromDb = async (
   };
 };
 
-const getSingleWorkout = async (id: string) => {
-  const result = await prisma.workout.findFirst({
+const getSingleNutrition = async (id: string) => {
+  const result = await prisma.nutrition.findFirst({
     where: { id },
   });
 
@@ -115,57 +115,57 @@ const getSingleWorkout = async (id: string) => {
   return result;
 };
 
-const updateWorkout = async (
-  payload: Partial<TWorkout>,
+const updateNutrition = async (
+  payload: Partial<TNutrition>,
   id: string,
-  thumbnailFile: any,
   iconFile: any,
-  videoFile: any
+  imageFile: any
 ) => {
-  const workout = await prisma.workout.findFirst({
+  const Nutrition = await prisma.nutrition.findFirst({
     where: { id },
   });
 
-  if (!workout) {
+  if (!Nutrition) {
     throw new ApiError(httpStatus.NOT_FOUND, "Fitness Goal not found");
   }
 
-  let icon = workout.icon;
+  let icon = Nutrition.icon;
   if (iconFile) {
     icon = (await fileUploader.uploadToDigitalOcean(iconFile)).Location;
   }
 
-  let thumbnail = workout.thumbnail;
-  if (thumbnailFile) {
-    thumbnail = (await fileUploader.uploadToDigitalOcean(thumbnailFile))
-      .Location;
+  let imageUrls: string[] = [];
+  if (Array.isArray(imageFile) && imageFile.length > 0) {
+    imageUrls = await Promise.all(
+      imageFile.map(async (image: any) => {
+        const uploaded = await fileUploader.uploadToDigitalOcean(image);
+        return uploaded.Location;
+      })
+    );
   }
 
-  let video = workout.video;
-  if (videoFile) {
-    video = (await fileUploader.uploadToDigitalOcean(videoFile)).Location;
-  }
+  const images = [...(Nutrition.images ?? []), ...imageUrls];
 
-  const result = await prisma.workout.update({
+  const result = await prisma.nutrition.update({
     where: { id },
-    data: { ...payload, video, thumbnail, icon },
+    data: { ...payload, images, icon },
   });
 
   return result;
 };
 
-const deleteWorkout = async (id: string) => {
-  await prisma.workout.delete({
+const deleteNutrition = async (id: string) => {
+  await prisma.nutrition.delete({
     where: { id },
   });
 
-  return { message: "Workout deleted successfully" };
+  return { message: "Nutrition deleted successfully" };
 };
 
-export const WorkoutService = {
-  createWorkoutIntoDb,
-  getWorkoutsFromDb,
-  getSingleWorkout,
-  updateWorkout,
-  deleteWorkout,
+export const NutritionService = {
+  createNutritionIntoDb,
+  getNutritionsFromDb,
+  getSingleNutrition,
+  updateNutrition,
+  deleteNutrition,
 };

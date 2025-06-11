@@ -4,6 +4,8 @@ import { UserRoutes } from "../modules/User/user.routes";
 import { UserInfoRoutes } from "../modules/UserInfo/userInfo.routes";
 import { FitnessGoalRoutes } from "../modules/FitnessGoal/fitnessGoal.routes";
 import { WorkoutRoutes } from "../modules/Workout/workout.routes";
+import { NutritionRoutes } from "../modules/Nutrition/nutrition.routes";
+import { BodyMeasurementRoutes } from "../modules/BodyMeasurement/bodyMeasurement.routes";
 
 const router = express.Router();
 
@@ -27,6 +29,14 @@ const moduleRoutes = [
   {
     path: "/workout",
     route: WorkoutRoutes,
+  },
+  {
+    path: "/nutrition",
+    route: NutritionRoutes,
+  },
+  {
+    path: "/body-measurement",
+    route: BodyMeasurementRoutes,
   },
 ];
 

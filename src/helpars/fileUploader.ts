@@ -53,7 +53,7 @@ const uploadMultipleImage = upload.fields([{ name: "images", maxCount: 15 }]);
 const workout = upload.fields([
   { name: "thumbnail", maxCount: 1 },
   { name: "icon", maxCount: 1 },
-  { name: "videos", maxCount: 15 },
+  { name: "video", maxCount: 1 },
 ]);
 
 const nutrition = upload.fields([
