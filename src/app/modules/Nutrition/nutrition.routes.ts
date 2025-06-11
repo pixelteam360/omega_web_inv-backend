@@ -24,7 +24,10 @@ router
 
 router
   .route("/:id")
-  .get(auth(UserRole.ADMIN, UserRole.USER), NutritionController.getSingleNutrition)
+  .get(
+    auth(UserRole.ADMIN, UserRole.USER),
+    NutritionController.getSingleNutrition
+  )
   .put(
     auth(UserRole.ADMIN, UserRole.USER),
     fileUploader.nutrition,
@@ -35,6 +38,9 @@ router
     validateRequest(NutritiontValidation.NutritiontUpdateSchema),
     NutritionController.updateNutrition
   )
-  .delete(auth(UserRole.ADMIN, UserRole.USER), NutritionController.deleteNutrition);
+  .delete(
+    auth(UserRole.ADMIN, UserRole.USER),
+    NutritionController.deleteNutrition
+  );
 
 export const NutritionRoutes = router;
