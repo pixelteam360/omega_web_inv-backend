@@ -35,10 +35,11 @@ const createUserInfoIntoDb = async (
 
 const getMyUserInfo = async (id: string) => {
   const result = await prisma.userInfo.findFirst({
-    where: { userId: id },
+    where: { userId: id }
   });
+
   if (!result) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+    throw new ApiError(httpStatus.NOT_FOUND, "User info not available");
   }
 
   return result;

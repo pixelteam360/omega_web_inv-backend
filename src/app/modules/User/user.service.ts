@@ -30,7 +30,7 @@ const createUserIntoDb = async (payload: TUser) => {
   );
 
   const result = await prisma.user.create({
-    data: { ...payload, password: hashedPassword },
+    data: { ...payload, password: hashedPassword, dailyGoal: { create: {} } },
     select: {
       id: true,
       email: true,
@@ -121,10 +121,45 @@ const getMyProfile = async (userEmail: string) => {
       birth: true,
       phone: true,
       activePlan: true,
+      userInfo: true,
+      weightProgress: true,
+      dailyGoal: true,
+      bodyMeasurement: true,
     },
   });
 
-  return userProfile;
+  const [totalWorkout, completedWorkout, totalMeals, completedMeals] =
+    await Promise.all([
+      prisma.workoutPlans.count({
+        where: { userId: userProfile?.id },
+      }),
+
+      prisma.workoutPlans.count({
+        where: { userId: userProfile?.id, isCompleted: true },
+      }),
+
+      prisma.mealPlans.count({
+        where: { userId: userProfile?.id },
+      }),
+
+      prisma.mealPlans.count({
+        where: { userId: userProfile?.id, isCompleted: true },
+      }),
+    ]);
+
+  const totalPlans = totalWorkout + totalMeals;
+  const completedPlans = completedWorkout + completedMeals;
+
+  const updatedDailyGoal = userProfile?.dailyGoal?.length
+    ? {
+        totalPlans,
+        completedPlans,
+        CaloriesBurned: userProfile?.dailyGoal[0].CaloriesBurned,
+        CaloriesConsumed: userProfile?.dailyGoal[0].CaloriesConsumed,
+      }
+    : {};
+
+  return { ...userProfile, dailyGoal: updatedDailyGoal };
 };
 
 const updateProfile = async (payload: TUser, userId: string) => {

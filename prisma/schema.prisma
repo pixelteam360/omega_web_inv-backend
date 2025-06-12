@@ -27,6 +27,10 @@ model User {
   purchasedPlan   PurchasedPlan[]
   workoutPlans    WorkoutPlans[]
   mealPlans       MealPlans[]
+  dailyGoal       DailyGoal[]
+  post            Post[]
+  PostLike        PostLike[]
+  PostComment     PostComment[]
 
   @@map("Users")
 }
@@ -131,6 +135,18 @@ model Workout {
   @@map("Workout")
 }
 
+model DailyGoal {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  CaloriesBurned   Int      @default(0)
+  CaloriesConsumed Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  userId           String   @db.ObjectId
+  user             User     @relation(fields: [userId], references: [id])
+
+  @@map("Daily-Goal")
+}
+
 model Nutrition {
   id             String          @id @default(auto()) @map("_id") @db.ObjectId
   icon           String          @default("")
@@ -197,10 +213,50 @@ model PurchasedPlan {
   updatedAt  DateTime @updatedAt
   userId     String   @db.ObjectId
   planId     String   @db.ObjectId
-  User       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
   plan       Plan     @relation(fields: [planId], references: [id])
 
   @@map("Purchased-Plan")
+}
+
+model Post {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  description String
+  images      String[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  userId      String        @db.ObjectId
+  user        User          @relation(fields: [userId], references: [id])
+  PostLike    PostLike[]
+  PostComment PostComment[]
+
+  @@map("Post")
+}
+
+model PostLike {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  like      Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String   @db.ObjectId
+  postId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@map("Post-Like")
+}
+
+model PostComment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  comment   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String   @db.ObjectId
+  postId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
+
+  @@map("Post-Comment")
 }
 
 enum UserRole {

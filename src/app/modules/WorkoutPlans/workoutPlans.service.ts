@@ -68,24 +68,43 @@ const makeCompletedWorkoutPlans = async (
 ) => {
   const WorkoutPlans = await prisma.workoutPlans.findFirst({
     where: { id: WorkoutPlansId, userId },
+    include: { workout: true },
   });
 
   if (!WorkoutPlans) {
     throw new ApiError(httpStatus.NOT_FOUND, "Workout not found");
   }
 
-  const result = await prisma.workoutPlans.update({
-    where: { id: WorkoutPlans.id },
-    data: { isCompleted: true },
+  const dailyGoal = await prisma.dailyGoal.findFirst({
+    where: { userId },
+  });
+
+  const result = await prisma.$transaction(async (prisma) => {
+    const updatePlan = await prisma.workoutPlans.update({
+      where: { id: WorkoutPlans.id },
+      data: { isCompleted: true },
+    });
+
+    await prisma.dailyGoal.update({
+      where: { id: dailyGoal?.id },
+      data: { CaloriesBurned: WorkoutPlans.workout.Kcal },
+    });
+
+    return updatePlan;
   });
 
   return result;
 };
 
 export const deletWorkoutPlans = async () => {
-  await prisma.workoutPlans.deleteMany();
+  await prisma.$transaction(async (prisma) => {
+    await prisma.workoutPlans.deleteMany();
 
-  console.log('success deleted');
+    await prisma.dailyGoal.updateMany({
+      data: { CaloriesBurned: 0, CaloriesConsumed: 0 },
+    });
+  });
+
   return { message: "All WorkoutPlans deleted successfully" };
 };
 
