@@ -25,6 +25,8 @@ model User {
   bodyMeasurement BodyMeasurement[]
   weightProgress  WeightProgress[]
   purchasedPlan   PurchasedPlan[]
+  workoutPlans    WorkoutPlans[]
+  mealPlans       MealPlans[]
 
   @@map("Users")
 }
@@ -87,59 +89,44 @@ model WeightProgress {
   @@map("Weight-Progress")
 }
 
-model Plan {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  duration      Int
-  price         Float
-  isDeleted     Boolean         @default(false)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  purchasedPlan PurchasedPlan[]
-  planFeatured  PlanFeatured[]
+model WorkoutPlans {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String   @db.ObjectId
+  workoutId   String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  workout     Workout  @relation(fields: [workoutId], references: [id])
 
-  @@map("Plan")
+  @@map("Workout-Plans")
 }
 
-model PlanFeatured {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  planId    String   @db.ObjectId
-  plan      Plan     @relation(fields: [planId], references: [id])
+model MealPlans {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  isCompleted Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  userId      String    @db.ObjectId
+  nutritionId String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  nutrition   Nutrition @relation(fields: [nutritionId], references: [id])
 
-  @@map("Plan-Featured")
-}
-
-model PurchasedPlan {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  paymentId  String
-  amount     Float
-  activePlan Boolean  @default(true)
-  stratDate  DateTime @default(now())
-  endDate    DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  userId     String   @db.ObjectId
-  planId     String   @db.ObjectId
-  User       User     @relation(fields: [userId], references: [id])
-  plan       Plan     @relation(fields: [planId], references: [id])
-
-  @@map("Purchased-Plan")
+  @@map("Meal-Plans")
 }
 
 model Workout {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  icon        String   @default("")
-  title       String
-  thumbnail   String   @default("")
-  video       String
-  duration    String
-  Kcal        Int
-  fitnessGoal String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String         @id @default(auto()) @map("_id") @db.ObjectId
+  icon         String         @default("")
+  title        String
+  thumbnail    String         @default("")
+  video        String
+  duration     String
+  Kcal         Int
+  fitnessGoal  String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  workoutPlans WorkoutPlans[]
 
   @@map("Workout")
 }
@@ -156,6 +143,7 @@ model Nutrition {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   nutritionItems NutritionItem[]
+  mealPlans      MealPlans[]
 
   @@map("Nutrition")
 }
@@ -171,6 +159,48 @@ model NutritionItem {
   nutrition   Nutrition @relation(fields: [nutritionId], references: [id])
 
   @@map("Nutrition-Item")
+}
+
+model Plan {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  duration      Int
+  price         Float
+  planFeatureds String[]
+  isDeleted     Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  purchasedPlan PurchasedPlan[]
+
+  @@map("Plan")
+}
+
+// model PlanFeatured {
+//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+//   title     String
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   planId    String   @db.ObjectId
+//   plan      Plan     @relation(fields: [planId], references: [id])
+
+//   @@map("Plan-Featured")
+// }
+
+model PurchasedPlan {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  paymentId  String
+  amount     Float
+  activePlan Boolean  @default(true)
+  stratDate  DateTime @default(now())
+  endDate    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     String   @db.ObjectId
+  planId     String   @db.ObjectId
+  User       User     @relation(fields: [userId], references: [id])
+  plan       Plan     @relation(fields: [planId], references: [id])
+
+  @@map("Purchased-Plan")
 }
 
 enum UserRole {

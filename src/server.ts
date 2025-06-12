@@ -1,8 +1,9 @@
 import { Server } from "http";
 import config from "./config";
-
-import prisma from "./shared/prisma";
 import app from "./app";
+import cron from "node-cron";
+import { deletWorkoutPlans } from "./app/modules/WorkoutPlans/workoutPlans.service";
+import { deletMealPlans } from "./app/modules/MealPlans/mealPlans.service";
 
 let server: Server;
 
@@ -12,13 +13,18 @@ async function startServer() {
   });
 }
 
+cron.schedule("0 0 * * *", async () => {
+  await deletWorkoutPlans();
+  await deletMealPlans();
+});
+
 async function main() {
   await startServer();
   const exitHandler = () => {
     if (server) {
       server.close(() => {
         console.info("Server closed!");
-        restartServer(); 
+        restartServer();
       });
     } else {
       process.exit(1);

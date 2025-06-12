@@ -154,7 +154,7 @@ const updateNutrition = async (
   return result;
 };
 
-const deleteNutrition = async (id: string) => {
+ const deleteNutrition = async (id: string) => {
   await prisma.nutrition.delete({
     where: { id },
   });
