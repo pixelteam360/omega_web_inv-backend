@@ -58,10 +58,23 @@ const myLikedPost = catchAsync(async (req, res) => {
   });
 });
 
+const commentAPost = catchAsync(async (req, res) => {
+  const result = await PostService.commentAPost(
+    req.body,
+    req.params.id,
+    req.user.id
+  );
+  sendResponse(res, {
+    message: "Post commented successfully",
+    data: result,
+  });
+});
+
 export const PostController = {
   createPost,
   getPosts,
   getSinglePost,
   giveLikeToPost,
-  myLikedPost
+  myLikedPost,
+  commentAPost,
 };

@@ -110,8 +110,8 @@ const getSinglePost = async (id: string) => {
       description: true,
       images: true,
       video: true,
-      PostComment: true,
-      PostLike: true,
+      postComment: true,
+      postLike: true,
     },
   });
 
@@ -157,10 +157,31 @@ const myLikedPost = async (postId: string, userId: string) => {
   return result;
 };
 
+const commentAPost = async (
+  payload: { comment: string },
+  postId: string,
+  userId: string
+) => {
+  const post = await prisma.post.findFirst({
+    where: { id: postId },
+  });
+
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Post not found");
+  }
+
+  const result = await prisma.postComment.create({
+    data: { ...payload, postId, userId },
+  });
+
+  return result;
+};
+
 export const PostService = {
   createPostIntoDb,
   getPostsFromDb,
   getSinglePost,
   giveLikeToPost,
-  myLikedPost
+  myLikedPost,
+  commentAPost,
 };

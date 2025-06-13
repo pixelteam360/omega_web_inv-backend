@@ -8,6 +8,8 @@ export type TUser = {
   activePlan: boolean;
   refferralCode?: string;
   password: string;
+  fcmToken?: string;
+  notification: boolean;
   role: UserRole;
   isDeleted: boolean;
   expirationOtp?: Date;

@@ -15,6 +15,8 @@ model User {
   activePlan      Boolean           @default(false)
   refferralCode   String?           @default("")
   password        String
+  fcmToken        String?           @default("")
+  notification    Boolean           @default(false)
   isDeleted       Boolean           @default(false)
   expirationOtp   DateTime?
   otp             Int?
@@ -29,8 +31,8 @@ model User {
   mealPlans       MealPlans[]
   dailyGoal       DailyGoal[]
   post            Post[]
-  PostLike        PostLike[]
-  PostComment     PostComment[]
+  postLike        PostLike[]
+  postComment     PostComment[]
 
   @@map("Users")
 }
@@ -229,8 +231,8 @@ model Post {
   updatedAt   DateTime      @updatedAt
   userId      String        @db.ObjectId
   user        User          @relation(fields: [userId], references: [id])
-  PostLike    PostLike[]
-  PostComment PostComment[]
+  postLike    PostLike[]
+  postComment PostComment[]
 
   @@map("Post")
 }

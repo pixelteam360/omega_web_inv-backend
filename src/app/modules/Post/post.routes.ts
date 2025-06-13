@@ -25,7 +25,8 @@ router
 router
   .route("/:id")
   .get(auth(UserRole.ADMIN, UserRole.USER), PostController.getSinglePost)
-  .patch(auth(UserRole.ADMIN, UserRole.USER), PostController.giveLikeToPost);
+  .patch(auth(UserRole.ADMIN, UserRole.USER), PostController.giveLikeToPost)
+  .post(auth(UserRole.ADMIN, UserRole.USER), PostController.commentAPost);
 
 router
   .route("/engagement/:id")
