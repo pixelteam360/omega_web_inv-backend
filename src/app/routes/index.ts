@@ -8,6 +8,7 @@ import { NutritionRoutes } from "../modules/Nutrition/nutrition.routes";
 import { BodyMeasurementRoutes } from "../modules/BodyMeasurement/bodyMeasurement.routes";
 import { WorkoutPlansRoutes } from "../modules/WorkoutPlans/workoutPlans.routes";
 import { MealPlansRoutes } from "../modules/MealPlans/mealPlans.routes";
+import { PostRoutes } from "../modules/Post/post.routes";
 
 const router = express.Router();
 
@@ -47,6 +48,10 @@ const moduleRoutes = [
   {
     path: "/meal-plans",
     route: MealPlansRoutes,
+  },
+  {
+    path: "/post",
+    route: PostRoutes,
   },
 ];
 

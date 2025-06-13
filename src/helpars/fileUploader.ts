@@ -61,6 +61,11 @@ const nutrition = upload.fields([
   { name: "images", maxCount: 15 },
 ]);
 
+const post = upload.fields([
+  { name: "images", maxCount: 15 },
+  { name: "video", maxCount: 1 },
+]);
+
 // ✅ Fixed Cloudinary Upload (Now supports buffer)
 const uploadToCloudinary = async (
   file: Express.Multer.File
@@ -135,6 +140,7 @@ export const fileUploader = {
   uploadMultipleImage,
   workout,
   nutrition,
+  post,
   uploadFile,
   cloudinaryUpload,
   uploadToDigitalOcean,
