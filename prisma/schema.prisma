@@ -15,6 +15,7 @@ model User {
   activePlan      Boolean           @default(false)
   refferralCode   String?           @default("")
   password        String
+  varifiedEmail   Boolean           @default(false)
   fcmToken        String?           @default("")
   notification    Boolean           @default(false)
   isDeleted       Boolean           @default(false)

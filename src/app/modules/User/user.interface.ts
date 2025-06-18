@@ -10,6 +10,7 @@ export type TUser = {
   password: string;
   fcmToken?: string;
   notification: boolean;
+  varifiedEmail: boolean;
   role: UserRole;
   isDeleted: boolean;
   expirationOtp?: Date;

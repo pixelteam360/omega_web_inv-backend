@@ -13,37 +13,37 @@ const createNutritionIntoDb = async (
   iconFile: any,
   imageFile: any
 ) => {
-  const fitnessGoal = await prisma.fitnessGoal.findFirst({
-    where: { title: payload.fitnessGoal },
-  });
+  // const fitnessGoal = await prisma.fitnessGoal.findFirst({
+  //   where: { title: payload.fitnessGoal },
+  // });
 
-  if (!fitnessGoal) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Fitness Goal not found");
-  }
+  // if (!fitnessGoal) {
+  //   throw new ApiError(httpStatus.NOT_FOUND, "Fitness Goal not found");
+  // }
 
-  if (!imageFile || imageFile.length < 1) {
-    throw new ApiError(httpStatus.NOT_FOUND, "iamge file not found");
-  }
+  // if (!imageFile || imageFile.length < 1) {
+  //   throw new ApiError(httpStatus.NOT_FOUND, "iamge file not found");
+  // }
 
-  let icon = "";
-  if (iconFile) {
-    icon = (await fileUploader.uploadToDigitalOcean(iconFile)).Location;
-  }
+  // let icon = "";
+  // if (iconFile) {
+  //   icon = (await fileUploader.uploadToDigitalOcean(iconFile)).Location;
+  // }
 
-  const images = await Promise.all(
-    imageFile.map(async (image: any) => {
-      const videoUrl = (await fileUploader.uploadToDigitalOcean(image))
-        .Location;
+  // const images = await Promise.all(
+  //   imageFile.map(async (image: any) => {
+  //     const videoUrl = (await fileUploader.uploadToDigitalOcean(image))
+  //       .Location;
 
-      return videoUrl;
-    })
-  );
+  //     return videoUrl;
+  //   })
+  // );
 
-  const result = await prisma.nutrition.create({
-    data: { ...payload, icon, images },
-  });
+  // const result = await prisma.nutrition.create({
+  //   data: { ...payload, icon, images },
+  // });
 
-  return result;
+  // return result;
 };
 
 const getNutritionsFromDb = async (
@@ -121,37 +121,37 @@ const updateNutrition = async (
   iconFile: any,
   imageFile: any
 ) => {
-  const Nutrition = await prisma.nutrition.findFirst({
-    where: { id },
-  });
+  // const Nutrition = await prisma.nutrition.findFirst({
+  //   where: { id },
+  // });
 
-  if (!Nutrition) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Fitness Goal not found");
-  }
+  // if (!Nutrition) {
+  //   throw new ApiError(httpStatus.NOT_FOUND, "Fitness Goal not found");
+  // }
 
-  let icon = Nutrition.icon;
-  if (iconFile) {
-    icon = (await fileUploader.uploadToDigitalOcean(iconFile)).Location;
-  }
+  // let icon = Nutrition.icon;
+  // if (iconFile) {
+  //   icon = (await fileUploader.uploadToDigitalOcean(iconFile)).Location;
+  // }
 
-  let imageUrls: string[] = [];
-  if (Array.isArray(imageFile) && imageFile.length > 0) {
-    imageUrls = await Promise.all(
-      imageFile.map(async (image: any) => {
-        const uploaded = await fileUploader.uploadToDigitalOcean(image);
-        return uploaded.Location;
-      })
-    );
-  }
+  // let imageUrls: string[] = [];
+  // if (Array.isArray(imageFile) && imageFile.length > 0) {
+  //   imageUrls = await Promise.all(
+  //     imageFile.map(async (image: any) => {
+  //       const uploaded = await fileUploader.uploadToDigitalOcean(image);
+  //       return uploaded.Location;
+  //     })
+  //   );
+  // }
 
-  const images = [...(Nutrition.images ?? []), ...imageUrls];
+  // const images = [...(Nutrition.images ?? []), ...imageUrls];
 
-  const result = await prisma.nutrition.update({
-    where: { id },
-    data: { ...payload, images, icon },
-  });
+  // const result = await prisma.nutrition.update({
+  //   where: { id },
+  //   data: { ...payload, images, icon },
+  // });
 
-  return result;
+  // return result;
 };
 
  const deleteNutrition = async (id: string) => {

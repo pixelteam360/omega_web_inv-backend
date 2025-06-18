@@ -80,8 +80,6 @@ const changePassword = async (
 };
 
 const forgotPassword = async (payload: { email: string }) => {
-  // Fetch user data or throw if not found
-  console.log(payload);
   const userData = await prisma.user.findFirstOrThrow({
     where: {
       email: payload.email,
@@ -231,6 +229,7 @@ const verifyForgotPasswordOtp = async (payload: {
     data: {
       otp: null, // Clear the OTP
       expirationOtp: null, // Clear the OTP expiration
+      varifiedEmail: true,
     },
   });
 
