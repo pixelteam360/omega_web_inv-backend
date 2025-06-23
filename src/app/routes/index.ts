@@ -9,6 +9,7 @@ import { BodyMeasurementRoutes } from "../modules/BodyMeasurement/bodyMeasuremen
 import { WorkoutPlansRoutes } from "../modules/WorkoutPlans/workoutPlans.routes";
 import { MealPlansRoutes } from "../modules/MealPlans/mealPlans.routes";
 import { PostRoutes } from "../modules/Post/post.routes";
+import { NotificationRoutes } from "../modules/Notification/notification.routes";
 
 const router = express.Router();
 
@@ -52,6 +53,10 @@ const moduleRoutes = [
   {
     path: "/post",
     route: PostRoutes,
+  },
+  {
+    path: "/notification",
+    route: NotificationRoutes,
   },
 ];
 

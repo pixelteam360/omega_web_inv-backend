@@ -8,32 +8,36 @@ datasource db {
 }
 
 model User {
-  id              String            @id @default(auto()) @map("_id") @db.ObjectId
-  email           String            @unique
-  phone           String
-  birth           DateTime
-  activePlan      Boolean           @default(false)
-  refferralCode   String?           @default("")
-  password        String
-  varifiedEmail   Boolean           @default(false)
-  fcmToken        String?           @default("")
-  notification    Boolean           @default(false)
-  isDeleted       Boolean           @default(false)
-  expirationOtp   DateTime?
-  otp             Int?
-  role            UserRole          @default(USER)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  userInfo        UserInfo[]
-  bodyMeasurement BodyMeasurement[]
-  weightProgress  WeightProgress[]
-  purchasedPlan   PurchasedPlan[]
-  workoutPlans    WorkoutPlans[]
-  mealPlans       MealPlans[]
-  dailyGoal       DailyGoal[]
-  post            Post[]
-  postLike        PostLike[]
-  postComment     PostComment[]
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  email            String            @unique
+  phone            String
+  birth            DateTime
+  activePlan       Boolean           @default(false)
+  refferralCode    String?           @default("")
+  password         String
+  varifiedEmail    Boolean           @default(false)
+  fcmToken         String?           @default("")
+  notification     Boolean           @default(false)
+  isDeleted        Boolean           @default(false)
+  expirationOtp    DateTime?
+  otp              Int?
+  role             UserRole          @default(USER)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  userInfo         UserInfo[]
+  bodyMeasurement  BodyMeasurement[]
+  weightProgress   WeightProgress[]
+  purchasedPlan    PurchasedPlan[]
+  workoutPlans     WorkoutPlans[]
+  mealPlans        MealPlans[]
+  dailyGoal        DailyGoal[]
+  post             Post[]
+  postLike         PostLike[]
+  postComment      PostComment[]
+  sentRooms        Room[]            @relation("RoomSender")
+  receivedRooms    Room[]            @relation("RoomReceiver")
+  sentMessages     Chat[]            @relation("ChatSender")
+  receivedMessages Chat[]            @relation("ChatReceiver")
 
   @@map("Users")
 }
@@ -263,6 +267,47 @@ model PostComment {
   @@map("Post-Comment")
 }
 
+model Notification {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  body      String
+  type      MessageType
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@map("Notification")
+}
+
+model Room {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  senderId   String   @db.ObjectId
+  receiverId String   @db.ObjectId
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  sender     User     @relation("RoomSender", fields: [senderId], references: [id])
+  receiver   User     @relation("RoomReceiver", fields: [receiverId], references: [id])
+  chat       Chat[]
+
+  @@map("rooms")
+}
+
+model Chat {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  message    String
+  images     String[]
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  senderId   String   @db.ObjectId
+  receiverId String   @db.ObjectId
+  roomId     String   @db.ObjectId
+  sender     User     @relation("ChatSender", fields: [senderId], references: [id])
+  receiver   User     @relation("ChatReceiver", fields: [receiverId], references: [id])
+  room       Room     @relation(fields: [roomId], references: [id])
+
+  @@map("chats")
+}
+
 enum UserRole {
   ADMIN
   USER
@@ -285,4 +330,10 @@ enum MealTime {
   LUNCH
   DINNER
   SNACK
+}
+
+enum MessageType {
+  PAID
+  UNPAID
+  ALL
 }
