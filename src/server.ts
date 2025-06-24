@@ -4,6 +4,7 @@ import app from "./app";
 import cron from "node-cron";
 import { deletWorkoutPlans } from "./app/modules/WorkoutPlans/workoutPlans.service";
 import { deletMealPlans } from "./app/modules/MealPlans/mealPlans.service";
+import { setupWebSocket } from "./app/modules/WebSocket";
 
 let server: Server;
 
@@ -11,6 +12,7 @@ async function startServer() {
   server = app.listen(config.port, () => {
     console.log("Server is listiening on port ", config.port);
   });
+  setupWebSocket(server);
 }
 
 cron.schedule("0 0 * * *", async () => {

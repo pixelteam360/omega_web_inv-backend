@@ -17,12 +17,14 @@ const app_1 = __importDefault(require("./app"));
 const node_cron_1 = __importDefault(require("node-cron"));
 const workoutPlans_service_1 = require("./app/modules/WorkoutPlans/workoutPlans.service");
 const mealPlans_service_1 = require("./app/modules/MealPlans/mealPlans.service");
+const WebSocket_1 = require("./app/modules/WebSocket");
 let server;
 function startServer() {
     return __awaiter(this, void 0, void 0, function* () {
         server = app_1.default.listen(config_1.default.port, () => {
             console.log("Server is listiening on port ", config_1.default.port);
         });
+        (0, WebSocket_1.setupWebSocket)(server);
     });
 }
 node_cron_1.default.schedule("0 0 * * *", () => __awaiter(void 0, void 0, void 0, function* () {

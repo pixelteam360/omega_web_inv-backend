@@ -14,6 +14,7 @@ const bodyMeasurement_routes_1 = require("../modules/BodyMeasurement/bodyMeasure
 const workoutPlans_routes_1 = require("../modules/WorkoutPlans/workoutPlans.routes");
 const mealPlans_routes_1 = require("../modules/MealPlans/mealPlans.routes");
 const post_routes_1 = require("../modules/Post/post.routes");
+const notification_routes_1 = require("../modules/Notification/notification.routes");
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
@@ -55,6 +56,10 @@ const moduleRoutes = [
     {
         path: "/post",
         route: post_routes_1.PostRoutes,
+    },
+    {
+        path: "/notification",
+        route: notification_routes_1.NotificationRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

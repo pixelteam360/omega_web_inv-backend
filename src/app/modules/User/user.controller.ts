@@ -40,9 +40,18 @@ const updateProfile = catchAsync(async (req, res) => {
   });
 });
 
+const myWeightProgress = catchAsync(async (req, res) => {
+  const result = await userService.myWeightProgress(req.user.id);
+  sendResponse(res, {
+    message: "My WeightProgress retrieved successfully!",
+    data: result,
+  });
+});
+
 export const userController = {
   createUser,
   getUsers,
   getMyProfile,
   updateProfile,
+  myWeightProgress
 };

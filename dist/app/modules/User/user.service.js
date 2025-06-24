@@ -190,7 +190,6 @@ const getMyProfile = (userEmail) => __awaiter(void 0, void 0, void 0, function* 
             phone: true,
             activePlan: true,
             userInfo: true,
-            weightProgress: true,
             dailyGoal: true,
             bodyMeasurement: true,
             varifiedEmail: true,
@@ -229,9 +228,16 @@ const updateProfile = (payload, userId) => __awaiter(void 0, void 0, void 0, fun
     });
     return result;
 });
+const myWeightProgress = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.weightProgress.findMany({
+        where: { userId },
+    });
+    return result;
+});
 exports.userService = {
     createUserIntoDb,
     getUsersFromDb,
     getMyProfile,
     updateProfile,
+    myWeightProgress
 };

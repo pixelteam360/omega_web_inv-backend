@@ -170,7 +170,6 @@ const getMyProfile = async (userEmail: string) => {
       phone: true,
       activePlan: true,
       userInfo: true,
-      weightProgress: true,
       dailyGoal: true,
       bodyMeasurement: true,
       varifiedEmail: true,
@@ -219,9 +218,18 @@ const updateProfile = async (payload: TUser, userId: string) => {
   return result;
 };
 
+const myWeightProgress = async (userId: string) => {
+  const result = await prisma.weightProgress.findMany({
+    where: { userId },
+  });
+
+  return result;
+};
+
 export const userService = {
   createUserIntoDb,
   getUsersFromDb,
   getMyProfile,
   updateProfile,
+  myWeightProgress
 };

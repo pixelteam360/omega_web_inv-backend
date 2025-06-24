@@ -24,7 +24,7 @@ model User {
   role             UserRole          @default(USER)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
-  userInfo         UserInfo[]
+  userInfo         UserInfo?
   bodyMeasurement  BodyMeasurement[]
   weightProgress   WeightProgress[]
   purchasedPlan    PurchasedPlan[]
@@ -55,7 +55,7 @@ model UserInfo {
   isDeleted         Boolean  @default(false)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-  userId            String   @db.ObjectId
+  userId            String   @unique @db.ObjectId
   user              User     @relation(fields: [userId], references: [id])
 
   @@map("User-Info")
@@ -282,6 +282,7 @@ model Room {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   senderId   String   @db.ObjectId
   receiverId String   @db.ObjectId
+  roomType   RoomType @default(ALL)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   sender     User     @relation("RoomSender", fields: [senderId], references: [id])
@@ -294,7 +295,7 @@ model Room {
 model Chat {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   message    String
-  images     String[]
+  images     String?  @default("")
   isRead     Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -336,4 +337,10 @@ enum MessageType {
   PAID
   UNPAID
   ALL
+}
+
+enum RoomType {
+  ALL
+  TRAINER
+  NUTRITION
 }
