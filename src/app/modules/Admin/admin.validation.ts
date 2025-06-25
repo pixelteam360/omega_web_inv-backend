@@ -1,22 +1,19 @@
 import { z } from "zod";
 
-const CreateAdminValidationSchema = z.object({
-  fullName: z.string(),
-  email: z.string().email("Invalid email address").min(1, "Email is required"), // Ensure email is provided and is valid
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-});
+export const userTypeEnum = z.enum(["PAID", "UNPAID", "ALL"]);
+export const isoDateSchema = z
+  .string()
+  .refine((val) => !isNaN(Date.parse(val)), {
+    message: "Invalid ISO date format",
+  });
 
-const AdminLoginValidationSchema = z.object({
-  email: z.string().email("Email is required"),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
-});
-
-const AdminUpdateSchema = z.object({
-  fullName: z.string().optional(),
+const DiscountCodeSchema = z.object({
+  code: z.number().int(),
+  discount: z.number(),
+  userType: userTypeEnum,
+  expireDate: isoDateSchema,
 });
 
 export const AdminValidation = {
-  CreateAdminValidationSchema,
-  AdminLoginValidationSchema,
-  AdminUpdateSchema,
+  DiscountCodeSchema,
 };

@@ -13,7 +13,6 @@ model User {
   phone            String
   birth            DateTime
   activePlan       Boolean           @default(false)
-  refferralCode    String?           @default("")
   password         String
   varifiedEmail    Boolean           @default(false)
   fcmToken         String?           @default("")
@@ -189,41 +188,30 @@ model Plan {
   title         String
   duration      Int
   price         Float
-  planFeatureds String[]
+  features      String[]
   isDeleted     Boolean         @default(false)
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  purchasedPlan PurchasedPlan[]
+  PurchasedPlan PurchasedPlan[]
 
-  @@map("Plan")
+  @@map("Subscriptions")
 }
 
-// model PlanFeatured {
-//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-//   title     String
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   planId    String   @db.ObjectId
-//   plan      Plan     @relation(fields: [planId], references: [id])
-
-//   @@map("Plan-Featured")
-// }
-
 model PurchasedPlan {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  paymentId  String
-  amount     Float
+  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
+  paymentId          String
+  amount             Float
   activePlan Boolean  @default(true)
-  stratDate  DateTime @default(now())
-  endDate    DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  userId     String   @db.ObjectId
-  planId     String   @db.ObjectId
-  user       User     @relation(fields: [userId], references: [id])
-  plan       Plan     @relation(fields: [planId], references: [id])
+  startDate          DateTime @default(now())
+  endDate            DateTime
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  userId             String   @db.ObjectId
+  planId             String   @db.ObjectId
+  user               User     @relation(fields: [userId], references: [id])
+  Plan               Plan     @relation(fields: [planId], references: [id])
 
-  @@map("Purchased-Plan")
+  @@map("Purchased-Subscription")
 }
 
 model Post {
@@ -307,6 +295,18 @@ model Chat {
   room       Room     @relation(fields: [roomId], references: [id])
 
   @@map("chats")
+}
+
+model DiscountCode {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  code       Int
+  discount   Float
+  userType   MessageType
+  expireDate DateTime    @updatedAt
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@map("Discount-Code")
 }
 
 enum UserRole {

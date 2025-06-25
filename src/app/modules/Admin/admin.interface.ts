@@ -1,21 +1,11 @@
-import { UserRole } from "@prisma/client";
+import { MessageType } from "@prisma/client";
 
-export type TUser = {
-  id?: string;
-  fullName: string;
-  email: string;
-  password: string;
-  role: UserRole;
-  isDeleted: boolean;
-  expirationOtp?: Date;
-  otp?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-export type IUserFilterRequest = {
-  name?: string | undefined;
-  email?: string | undefined;
-  contactNumber?: string | undefined;
-  searchTerm?: string | undefined;
+export type TDiscountCode = {
+  id: string;
+  code: number;
+  discount: number;
+  userType: MessageType;
+  expireDate: Date;
+  createdAt: Date;
+  updatedAt: Date;
 };

@@ -1,4 +1,8 @@
+import httpStatus from "http-status";
+import ApiError from "../../../errors/ApiErrors";
 import prisma from "../../../shared/prisma";
+import { sendNotification } from "../Notification/notification.service";
+import { TDiscountCode } from "./admin.interface";
 
 const dashboardOverView = async () => {
   const users = await prisma.user.count();
@@ -46,10 +50,44 @@ const userProgress = async (id: string) => {
     where: { userId: id },
   });
 
-  return {...res, workout, meal};
+  return { ...res, workout, meal };
+};
+
+const createDiscountCode = async (payload: TDiscountCode) => {
+  const discount = await prisma.discountCode.findFirst({
+    where: { code: payload.code },
+  });
+
+  if (discount) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "This discount code already exists"
+    );
+  }
+
+  const res = await prisma.discountCode.create({
+    data: payload,
+  });
+
+  const notification = {
+    title: "New Discount Code 🎁",
+    body: `You have received a discount code that gives you ${payload.discount}% off on all plans. Your code: ${payload.code}`,
+    type: payload.userType,
+  };
+
+  await sendNotification(notification);
+
+  return res;
+};
+
+const getAllDiscountCode = async () => {
+  const res = await prisma.discountCode.findMany();
+  return res;
 };
 
 export const AdminService = {
   dashboardOverView,
   userProgress,
+  createDiscountCode,
+  getAllDiscountCode,
 };

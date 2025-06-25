@@ -8,25 +8,12 @@ import { UserRole } from "@prisma/client";
 const router = express.Router();
 
 router
-  .route("/all")
+  .route("/")
   .post(
     auth(UserRole.ADMIN),
     validateRequest(NotificationValidation.NotificationSchema),
-    NotificationController.sendNotificationToAll
+    NotificationController.sendNotification
   );
 
-router.post(
-  "/paid",
-  auth(UserRole.ADMIN),
-  validateRequest(NotificationValidation.NotificationSchema),
-  NotificationController.sendNotificationToPaidUser
-);
-
-router.post(
-  "/unpaid",
-  auth(UserRole.ADMIN),
-  validateRequest(NotificationValidation.NotificationSchema),
-  NotificationController.sendNotificationToUnPaidUser
-);
 
 export const NotificationRoutes = router;

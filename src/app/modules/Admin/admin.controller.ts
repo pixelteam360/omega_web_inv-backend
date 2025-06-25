@@ -18,7 +18,25 @@ const userProgress = catchAsync(async (req, res) => {
   });
 });
 
+const createDiscountCode = catchAsync(async (req, res) => {
+  const result = await AdminService.createDiscountCode(req.body);
+  sendResponse(res, {
+    message: "DiscountCode Cerated successfully!",
+    data: result,
+  });
+});
+
+const getAllDiscountCode = catchAsync(async (req, res) => {
+  const result = await AdminService.getAllDiscountCode();
+  sendResponse(res, {
+    message: "DiscountCode retrieved successfully!",
+    data: result,
+  });
+});
+
 export const AdminController = {
   dashboardOverView,
-  userProgress
+  userProgress,
+  createDiscountCode,
+  getAllDiscountCode
 };

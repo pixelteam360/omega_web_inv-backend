@@ -6,7 +6,7 @@ exports.MessageTypeEnum = zod_1.z.enum(["PAID", "UNPAID", "ALL"]);
 const NotificationSchema = zod_1.z.object({
     title: zod_1.z.string(),
     body: zod_1.z.string(),
-    type: exports.MessageTypeEnum.optional(),
+    type: exports.MessageTypeEnum,
 });
 exports.NotificationValidation = {
     NotificationSchema,

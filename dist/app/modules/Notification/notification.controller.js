@@ -16,29 +16,13 @@ exports.NotificationController = void 0;
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
 const notification_service_1 = require("./notification.service");
-const sendNotificationToAll = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield notification_service_1.NotificationService.sendNotificationToAll(req.body);
-    (0, sendResponse_1.default)(res, {
-        message: "Notification send successfully",
-        data: result,
-    });
-}));
-const sendNotificationToPaidUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield notification_service_1.NotificationService.sendNotificationToPaidUser(req.body);
-    (0, sendResponse_1.default)(res, {
-        message: "Notification send successfully",
-        data: result,
-    });
-}));
-const sendNotificationToUnPaidUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield notification_service_1.NotificationService.sendNotificationToUnPaidUser(req.body);
+const sendNotification = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield notification_service_1.NotificationService.sendNotification(req.body);
     (0, sendResponse_1.default)(res, {
         message: "Notification send successfully",
         data: result,
     });
 }));
 exports.NotificationController = {
-    sendNotificationToAll,
-    sendNotificationToPaidUser,
-    sendNotificationToUnPaidUser
+    sendNotification,
 };

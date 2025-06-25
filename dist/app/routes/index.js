@@ -15,6 +15,7 @@ const workoutPlans_routes_1 = require("../modules/WorkoutPlans/workoutPlans.rout
 const mealPlans_routes_1 = require("../modules/MealPlans/mealPlans.routes");
 const post_routes_1 = require("../modules/Post/post.routes");
 const notification_routes_1 = require("../modules/Notification/notification.routes");
+const admin_routes_1 = require("../modules/Admin/admin.routes");
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
@@ -60,6 +61,10 @@ const moduleRoutes = [
     {
         path: "/notification",
         route: notification_routes_1.NotificationRoutes,
+    },
+    {
+        path: "/admin",
+        route: admin_routes_1.AdminRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

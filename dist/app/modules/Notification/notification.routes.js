@@ -12,8 +12,6 @@ const notification_controller_1 = require("./notification.controller");
 const client_1 = require("@prisma/client");
 const router = express_1.default.Router();
 router
-    .route("/all")
-    .post((0, auth_1.default)(client_1.UserRole.ADMIN), (0, validateRequest_1.default)(post_validation_1.NotificationValidation.NotificationSchema), notification_controller_1.NotificationController.sendNotificationToAll);
-router.post("/paid", (0, auth_1.default)(client_1.UserRole.ADMIN), (0, validateRequest_1.default)(post_validation_1.NotificationValidation.NotificationSchema), notification_controller_1.NotificationController.sendNotificationToPaidUser);
-router.post("/unpaid", (0, auth_1.default)(client_1.UserRole.ADMIN), (0, validateRequest_1.default)(post_validation_1.NotificationValidation.NotificationSchema), notification_controller_1.NotificationController.sendNotificationToUnPaidUser);
+    .route("/")
+    .post((0, auth_1.default)(client_1.UserRole.ADMIN), (0, validateRequest_1.default)(post_validation_1.NotificationValidation.NotificationSchema), notification_controller_1.NotificationController.sendNotification);
 exports.NotificationRoutes = router;
