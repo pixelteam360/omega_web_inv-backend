@@ -135,10 +135,8 @@ const getUsersFromDb = async (
           },
     select: {
       id: true,
-      email: true,
-      birth: true,
-      phone: true,
       activePlan: true,
+      userInfo: { select: { fullName: true, image: true } },
     },
   });
   const total = await prisma.user.count({
@@ -231,5 +229,5 @@ export const userService = {
   getUsersFromDb,
   getMyProfile,
   updateProfile,
-  myWeightProgress
+  myWeightProgress,
 };

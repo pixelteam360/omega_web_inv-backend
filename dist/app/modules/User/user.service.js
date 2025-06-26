@@ -156,10 +156,8 @@ const getUsersFromDb = (params, options) => __awaiter(void 0, void 0, void 0, fu
             },
         select: {
             id: true,
-            email: true,
-            birth: true,
-            phone: true,
             activePlan: true,
+            userInfo: { select: { fullName: true, image: true } },
         },
     });
     const total = yield prisma_1.default.user.count({
@@ -239,5 +237,5 @@ exports.userService = {
     getUsersFromDb,
     getMyProfile,
     updateProfile,
-    myWeightProgress
+    myWeightProgress,
 };
