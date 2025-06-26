@@ -16,6 +16,8 @@ const mealPlans_routes_1 = require("../modules/MealPlans/mealPlans.routes");
 const post_routes_1 = require("../modules/Post/post.routes");
 const notification_routes_1 = require("../modules/Notification/notification.routes");
 const admin_routes_1 = require("../modules/Admin/admin.routes");
+const plan_routes_1 = require("../modules/Plan/plan.routes");
+const purchasedPlan_routes_1 = require("../modules/PurchasedPlan/purchasedPlan.routes");
 const router = express_1.default.Router();
 const moduleRoutes = [
     {
@@ -65,6 +67,14 @@ const moduleRoutes = [
     {
         path: "/admin",
         route: admin_routes_1.AdminRoutes,
+    },
+    {
+        path: "/plans",
+        route: plan_routes_1.PlanRoutes,
+    },
+    {
+        path: "/purchased-plans",
+        route: purchasedPlan_routes_1.PurchasedPlanRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

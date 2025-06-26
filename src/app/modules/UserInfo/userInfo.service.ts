@@ -45,7 +45,7 @@ const getMyUserInfo = async (id: string) => {
   return result;
 };
 
-const updateUserInfo = async (
+const updateUserInfo = async ( 
   payload: UserInfo,
   imageFile: any,
   userId: string

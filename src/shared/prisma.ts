@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { initiateSuperAdmin } from "../app/db/db";
+import { initiateSubscriptionPlan, initiateSuperAdmin } from "../app/db/db";
 
 const prisma = new PrismaClient();
 
@@ -10,6 +10,8 @@ async function connectPrisma() {
 
     // initiate super admin
     initiateSuperAdmin();
+    // initiate SubscriptionPlan
+    initiateSubscriptionPlan();
   } catch (error) {
     console.error("Prisma connection failed:", error);
     process.exit(1); // Exit process with failure

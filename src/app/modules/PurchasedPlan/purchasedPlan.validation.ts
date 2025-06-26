@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 const CreatePurchasedPlanValidationSchema = z.object({
-  subscriptionId: z.string(),
-  paymentId: z.string(),
+  planId: z.string(),
+  paymentId: z.string().optional(),
 });
 
 export const PurchasedPlanValidation = {

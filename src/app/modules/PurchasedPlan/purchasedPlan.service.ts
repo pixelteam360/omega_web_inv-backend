@@ -1,21 +1,22 @@
 import prisma from "../../../shared/prisma";
 import ApiError from "../../../errors/ApiErrors";
 import httpStatus from "http-status";
-import { TPurchasedPlan } from "./purchasedPlan.interface";
 
-const createPurchasedPlanIntoDb = async (
-  payload: TPurchasedPlan,
+export const createPurchasedPlanIntoDb = async (
+  payload: { planId: string; paymentId?: string },
   userId: string
 ) => {
   const user = await prisma.user.findFirst({
     where: { id: userId },
+    select: { id: true },
   });
 
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
   const Plan = await prisma.plan.findFirst({
-    where: { id: payload.id },
+    where: { id: payload.planId },
+    select: { id: true, duration: true, price: true },
   });
 
   if (!Plan) {
@@ -24,6 +25,7 @@ const createPurchasedPlanIntoDb = async (
 
   const havePlan = await prisma.purchasedPlan.findFirst({
     where: { userId },
+    select: { id: true, activePlan: true },
   });
 
   if (havePlan?.activePlan) {
@@ -72,7 +74,7 @@ const createPurchasedPlanIntoDb = async (
           activePlan: true,
           endDate,
           amount,
-          paymentId: "",
+          paymentId: payload.paymentId || "",
         },
       });
 
@@ -119,6 +121,8 @@ export const checkPlans = async () => {
   });
 
   const expiredUserIds = expiredPlans.map((sub) => sub.userId);
+
+  if (expiredUserIds.length === 0) return;
 
   await prisma.$transaction(async (prisma) => {
     const updatePlan = await prisma.purchasedPlan.updateMany({

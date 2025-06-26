@@ -18,6 +18,7 @@ const node_cron_1 = __importDefault(require("node-cron"));
 const workoutPlans_service_1 = require("./app/modules/WorkoutPlans/workoutPlans.service");
 const mealPlans_service_1 = require("./app/modules/MealPlans/mealPlans.service");
 const WebSocket_1 = require("./app/modules/WebSocket");
+const purchasedPlan_service_1 = require("./app/modules/PurchasedPlan/purchasedPlan.service");
 let server;
 function startServer() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -30,6 +31,7 @@ function startServer() {
 node_cron_1.default.schedule("0 0 * * *", () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, workoutPlans_service_1.deletWorkoutPlans)();
     yield (0, mealPlans_service_1.deletMealPlans)();
+    yield (0, purchasedPlan_service_1.checkPlans)();
 }));
 function main() {
     return __awaiter(this, void 0, void 0, function* () {

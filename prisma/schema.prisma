@@ -187,6 +187,7 @@ model Plan {
   id            String          @id @default(auto()) @map("_id") @db.ObjectId
   title         String
   duration      Int
+  type          PlanType
   price         Float
   features      String[]
   isDeleted     Boolean         @default(false)
@@ -194,24 +195,24 @@ model Plan {
   updatedAt     DateTime        @updatedAt
   PurchasedPlan PurchasedPlan[]
 
-  @@map("Subscriptions")
+  @@map("Subscription-Plan")
 }
 
 model PurchasedPlan {
-  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
-  paymentId          String
-  amount             Float
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  paymentId  String
+  amount     Float
   activePlan Boolean  @default(true)
-  startDate          DateTime @default(now())
-  endDate            DateTime
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  userId             String   @db.ObjectId
-  planId             String   @db.ObjectId
-  user               User     @relation(fields: [userId], references: [id])
-  Plan               Plan     @relation(fields: [planId], references: [id])
+  startDate  DateTime @default(now())
+  endDate    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     String   @db.ObjectId
+  planId     String   @db.ObjectId
+  user       User     @relation(fields: [userId], references: [id])
+  Plan       Plan     @relation(fields: [planId], references: [id])
 
-  @@map("Purchased-Subscription")
+  @@map("Purchased-Plan")
 }
 
 model Post {
@@ -343,4 +344,9 @@ enum RoomType {
   ALL
   TRAINER
   NUTRITION
+}
+
+enum PlanType {
+  MONTHLY
+  YEARLY
 }

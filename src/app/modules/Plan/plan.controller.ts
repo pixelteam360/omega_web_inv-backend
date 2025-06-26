@@ -1,7 +1,6 @@
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { PlanService } from "./plan.service";
-import pick from "../../../shared/pick";
 
 const createPlan = catchAsync(async (req, res) => {
   const result = await PlanService.createPlanIntoDb(req.body);

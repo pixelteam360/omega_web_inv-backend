@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initiateSuperAdmin = void 0;
+exports.initiateSubscriptionPlan = exports.initiateSuperAdmin = void 0;
 const client_1 = require("@prisma/client");
 const prisma_1 = __importDefault(require("../../shared/prisma"));
 const bcrypt = __importStar(require("bcrypt"));
@@ -46,6 +46,7 @@ const initiateSuperAdmin = () => __awaiter(void 0, void 0, void 0, function* () 
         email: "admin@gmail.com",
         phone: "123456789",
         birth: "2000-06-09T12:00:00Z",
+        activePlan: true,
         password: hashedPassword,
         role: client_1.UserRole.ADMIN,
     };
@@ -61,3 +62,37 @@ const initiateSuperAdmin = () => __awaiter(void 0, void 0, void 0, function* () 
     });
 });
 exports.initiateSuperAdmin = initiateSuperAdmin;
+const initiateSubscriptionPlan = () => __awaiter(void 0, void 0, void 0, function* () {
+    const isExistPlan = yield prisma_1.default.plan.findMany();
+    if (isExistPlan.length > 0)
+        return;
+    const defaultPlan = [
+        {
+            title: "Monthly Plan",
+            duration: 30,
+            price: 12.99,
+            type: client_1.PlanType.MONTHLY,
+            features: [
+                "Unlimited access to all workouts and meal plans",
+                "Messaging and full community interaction",
+                "A 25% discount on vitamins and supplements at Alphaomegavitality.com",
+            ],
+        },
+        {
+            title: "Yearly Plan",
+            duration: 365,
+            price: 89.99,
+            type: client_1.PlanType.YEARLY,
+            features: [
+                "Offering over 40% savings",
+                "Unlimited access to all workouts and meal plans",
+                "Messaging and full community interaction",
+                "A 25% discount on vitamins and supplements at Alphaomegavitality.com",
+            ],
+        },
+    ];
+    yield prisma_1.default.plan.createMany({
+        data: defaultPlan,
+    });
+});
+exports.initiateSubscriptionPlan = initiateSubscriptionPlan;

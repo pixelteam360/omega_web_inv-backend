@@ -20,12 +20,12 @@ router
 
 router.get(
   "/my-purchased",
-  auth(UserRole.USER),
+  auth(UserRole.USER, UserRole.ADMIN),
   PurchasedPlanController.getMyPurchasedPlan
 );
 
 router
   .route("/:id")
-  .get(auth(UserRole.USER), PurchasedPlanController.getSinglePurchasedPlan);
+  .get(auth(UserRole.USER, UserRole.ADMIN), PurchasedPlanController.getSinglePurchasedPlan);
 
 export const PurchasedPlanRoutes = router;

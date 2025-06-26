@@ -55,6 +55,7 @@ const user_costant_1 = require("./user.costant");
 const config_1 = __importDefault(require("../../../config"));
 const crypto_1 = __importDefault(require("crypto"));
 const emailSender_1 = require("../../../shared/emailSender");
+const purchasedPlan_service_1 = require("../PurchasedPlan/purchasedPlan.service");
 const createUserIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const existingUser = yield prisma_1.default.user.findFirst({
         where: {
@@ -98,6 +99,14 @@ const createUserIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function
         </div>
     </div> `;
     const hashedPassword = yield bcrypt.hash(payload.password, Number(config_1.default.bcrypt_salt_rounds));
+    const plan = yield prisma_1.default.plan.findFirst({
+        where: { type: "MONTHLY" },
+        select: { id: true },
+    });
+    const refferral = yield prisma_1.default.user.findFirst({
+        where: { id: payload.refferralCode },
+        select: { id: true },
+    });
     yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
         const userData = yield prisma.user.create({
             data: Object.assign(Object.assign({}, payload), { password: hashedPassword, dailyGoal: { create: {} } }),
@@ -116,6 +125,9 @@ const createUserIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function
                 expirationOtp: otpExpires,
             },
         });
+        if (payload.refferralCode && plan && refferral) {
+            yield (0, purchasedPlan_service_1.createPurchasedPlanIntoDb)({ planId: plan.id, paymentId: "defaultPlanId" }, refferral.id);
+        }
     }));
     return { message: "OTP sent to your email successfully" };
 });

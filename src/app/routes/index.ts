@@ -11,6 +11,8 @@ import { MealPlansRoutes } from "../modules/MealPlans/mealPlans.routes";
 import { PostRoutes } from "../modules/Post/post.routes";
 import { NotificationRoutes } from "../modules/Notification/notification.routes";
 import { AdminRoutes } from "../modules/Admin/admin.routes";
+import { PlanRoutes } from "../modules/Plan/plan.routes";
+import { PurchasedPlanRoutes } from "../modules/PurchasedPlan/purchasedPlan.routes";
 
 const router = express.Router();
 
@@ -62,6 +64,14 @@ const moduleRoutes = [
   {
     path: "/admin",
     route: AdminRoutes,
+  },
+  {
+    path: "/plans",
+    route: PlanRoutes,
+  },
+  {
+    path: "/purchased-plans",
+    route: PurchasedPlanRoutes,
   },
 ];
 

@@ -9,6 +9,7 @@ import config from "../../../config";
 import { IUserFilterRequest, TUser } from "./user.interface";
 import crypto from "crypto";
 import { emailSender } from "../../../shared/emailSender";
+import { createPurchasedPlanIntoDb } from "../PurchasedPlan/purchasedPlan.service";
 
 const createUserIntoDb = async (payload: TUser) => {
   const existingUser = await prisma.user.findFirst({
@@ -65,6 +66,16 @@ const createUserIntoDb = async (payload: TUser) => {
     Number(config.bcrypt_salt_rounds)
   );
 
+  const plan = await prisma.plan.findFirst({
+    where: { type: "MONTHLY" },
+    select: { id: true },
+  });
+
+  const refferral = await prisma.user.findFirst({
+    where: { id: payload.refferralCode },
+    select: { id: true },
+  });
+
   await prisma.$transaction(async (prisma) => {
     const userData = await prisma.user.create({
       data: { ...payload, password: hashedPassword, dailyGoal: { create: {} } },
@@ -85,6 +96,13 @@ const createUserIntoDb = async (payload: TUser) => {
         expirationOtp: otpExpires,
       },
     });
+
+    if (payload.refferralCode && plan && refferral) {
+      await createPurchasedPlanIntoDb(
+        { planId: plan.id, paymentId: "defaultPlanId" },
+        refferral.id
+      );
+    }
   });
 
   return { message: "OTP sent to your email successfully" };

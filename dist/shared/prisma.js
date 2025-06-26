@@ -19,6 +19,8 @@ function connectPrisma() {
             console.log("Prisma connected to the database successfully!");
             // initiate super admin
             (0, db_1.initiateSuperAdmin)();
+            // initiate SubscriptionPlan
+            (0, db_1.initiateSubscriptionPlan)();
         }
         catch (error) {
             console.error("Prisma connection failed:", error);

@@ -5,6 +5,7 @@ import cron from "node-cron";
 import { deletWorkoutPlans } from "./app/modules/WorkoutPlans/workoutPlans.service";
 import { deletMealPlans } from "./app/modules/MealPlans/mealPlans.service";
 import { setupWebSocket } from "./app/modules/WebSocket";
+import { checkPlans } from "./app/modules/PurchasedPlan/purchasedPlan.service";
 
 let server: Server;
 
@@ -18,6 +19,7 @@ async function startServer() {
 cron.schedule("0 0 * * *", async () => {
   await deletWorkoutPlans();
   await deletMealPlans();
+  await checkPlans();
 });
 
 async function main() {

@@ -15,8 +15,8 @@ router
     .route("/")
     .get(purchasedPlan_controller_1.PurchasedPlanController.getPurchasedPlans)
     .post((0, auth_1.default)(client_1.UserRole.USER, client_1.UserRole.ADMIN), (0, validateRequest_1.default)(purchasedPlan_validation_1.PurchasedPlanValidation.CreatePurchasedPlanValidationSchema), purchasedPlan_controller_1.PurchasedPlanController.createPurchasedPlan);
-router.get("/my-purchased", (0, auth_1.default)(client_1.UserRole.USER), purchasedPlan_controller_1.PurchasedPlanController.getMyPurchasedPlan);
+router.get("/my-purchased", (0, auth_1.default)(client_1.UserRole.USER, client_1.UserRole.ADMIN), purchasedPlan_controller_1.PurchasedPlanController.getMyPurchasedPlan);
 router
     .route("/:id")
-    .get((0, auth_1.default)(client_1.UserRole.USER), purchasedPlan_controller_1.PurchasedPlanController.getSinglePurchasedPlan);
+    .get((0, auth_1.default)(client_1.UserRole.USER, client_1.UserRole.ADMIN), purchasedPlan_controller_1.PurchasedPlanController.getSinglePurchasedPlan);
 exports.PurchasedPlanRoutes = router;

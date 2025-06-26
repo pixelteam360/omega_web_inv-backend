@@ -12,25 +12,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PurchasedPlanService = exports.checkPlans = void 0;
+exports.PurchasedPlanService = exports.checkPlans = exports.createPurchasedPlanIntoDb = void 0;
 const prisma_1 = __importDefault(require("../../../shared/prisma"));
 const ApiErrors_1 = __importDefault(require("../../../errors/ApiErrors"));
 const http_status_1 = __importDefault(require("http-status"));
 const createPurchasedPlanIntoDb = (payload, userId) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield prisma_1.default.user.findFirst({
         where: { id: userId },
+        select: { id: true },
     });
     if (!user) {
         throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "User not found");
     }
     const Plan = yield prisma_1.default.plan.findFirst({
-        where: { id: payload.id },
+        where: { id: payload.planId },
+        select: { id: true, duration: true, price: true },
     });
     if (!Plan) {
         throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "Plan not found");
     }
     const havePlan = yield prisma_1.default.purchasedPlan.findFirst({
         where: { userId },
+        select: { id: true, activePlan: true },
     });
     if (havePlan === null || havePlan === void 0 ? void 0 : havePlan.activePlan) {
         throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You already have a active Plan");
@@ -62,7 +65,7 @@ const createPurchasedPlanIntoDb = (payload, userId) => __awaiter(void 0, void 0,
         const result = yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
             const createPlan = yield prisma.purchasedPlan.create({
                 data: Object.assign(Object.assign({}, payload), { userId: user.id, activePlan: true, endDate,
-                    amount, paymentId: "" }),
+                    amount, paymentId: payload.paymentId || "" }),
             });
             yield prisma.user.update({
                 where: { id: user.id },
@@ -73,6 +76,7 @@ const createPurchasedPlanIntoDb = (payload, userId) => __awaiter(void 0, void 0,
         return result;
     }
 });
+exports.createPurchasedPlanIntoDb = createPurchasedPlanIntoDb;
 const getPurchasedPlansFromDb = () => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.purchasedPlan.findMany({});
     return result;
@@ -99,6 +103,8 @@ const checkPlans = () => __awaiter(void 0, void 0, void 0, function* () {
         select: { id: true, userId: true },
     });
     const expiredUserIds = expiredPlans.map((sub) => sub.userId);
+    if (expiredUserIds.length === 0)
+        return;
     yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
         const updatePlan = yield prisma.purchasedPlan.updateMany({
             where: { userId: { in: expiredUserIds } },
@@ -116,7 +122,7 @@ const checkPlans = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.checkPlans = checkPlans;
 exports.PurchasedPlanService = {
-    createPurchasedPlanIntoDb,
+    createPurchasedPlanIntoDb: exports.createPurchasedPlanIntoDb,
     getPurchasedPlansFromDb,
     getSinglePurchasedPlan,
     getMyPurchasedPlan,
