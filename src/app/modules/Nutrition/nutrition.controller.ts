@@ -7,18 +7,9 @@ import { nutritionFilterableFields } from "./nutrition.costant";
 const createNutrition = catchAsync(async (req, res) => {
   const files = req.files as any;
 
-  const iconFile =
-    Array.isArray(files?.icon) && files.icon.length > 0
-      ? files.icon[0]
-      : undefined;
-
-  const iamgeFile =
-    Array.isArray(files?.images) && files.images.length > 0 ? files.images : [];
-
   const result = await NutritionService.createNutritionIntoDb(
     req.body,
-    iconFile,
-    iamgeFile
+    req.files
   );
   sendResponse(res, {
     message: "Nutrition created successfully!",

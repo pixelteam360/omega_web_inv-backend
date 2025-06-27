@@ -1,13 +1,14 @@
-import { UserRole } from "@prisma/client";
+import { MealTime } from "@prisma/client";
 
 export type TNutrition = {
   id?: string;
   icon: string;
   title: string;
-  images: string[];
-  duration: string;
   Kcal: number;
   fitnessGoal: string;
+  mealTime: MealTime;
+  items: any[];
+  nutritionTips: string[];
   createdAt?: Date;
   updatedAt?: Date;
 };

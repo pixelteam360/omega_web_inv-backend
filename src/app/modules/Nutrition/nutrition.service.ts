@@ -8,42 +8,64 @@ import { INutritionFilterRequest, TNutrition } from "./nutrition.interface";
 import httpStatus from "http-status";
 import { nutritionSearchAbleFields } from "./nutrition.costant";
 
-const createNutritionIntoDb = async (
-  payload: TNutrition,
-  iconFile: any,
-  imageFile: any
-) => {
-  // const fitnessGoal = await prisma.fitnessGoal.findFirst({
-  //   where: { title: payload.fitnessGoal },
-  // });
+const createNutritionIntoDb = async (payload: TNutrition, files: any) => {
+  const iconFile = files.find((file: any) => file.fieldname === "icon");
 
-  // if (!fitnessGoal) {
-  //   throw new ApiError(httpStatus.NOT_FOUND, "Fitness Goal not found");
-  // }
+  const nutritionFile = files.find(
+    (file: any) => file.fieldname === "nutritionTips"
+  );
 
-  // if (!imageFile || imageFile.length < 1) {
-  //   throw new ApiError(httpStatus.NOT_FOUND, "iamge file not found");
-  // }
+  if (!nutritionFile) {
+    throw new ApiError(httpStatus.NOT_FOUND, "nutrition file not found");
+  }
 
-  // let icon = "";
-  // if (iconFile) {
-  //   icon = (await fileUploader.uploadToDigitalOcean(iconFile)).Location;
-  // }
+  let icon = "";
+  if (iconFile) {
+    icon = (await fileUploader.uploadToDigitalOcean(iconFile)).Location;
+  }
 
-  // const images = await Promise.all(
-  //   imageFile.map(async (image: any) => {
-  //     const videoUrl = (await fileUploader.uploadToDigitalOcean(image))
-  //       .Location;
+  let nutritionTips = "";
+  if (nutritionFile) {
+    nutritionTips = (await fileUploader.uploadToDigitalOcean(nutritionFile))
+      .Location;
+  }
 
-  //     return videoUrl;
-  //   })
-  // );
+  const itemsData = await Promise.all(
+    payload.items.map(async (item, idx) => {
+      const imageFile = files.find(
+        (file: any) => file.fieldname === `items[${idx}][image]`
+      );
+      console.log("imageFile ===>", imageFile);
+      const image = (await fileUploader.uploadToDigitalOcean(imageFile))
+        .Location;
+      return {
+        ...item,
+        image,
+      };
+    })
+  );
 
-  // const result = await prisma.nutrition.create({
-  //   data: { ...payload, icon, images },
-  // });
+  const result = await prisma.$transaction(async (tx) => {
+    const nutrition = await tx.nutrition.create({
+      data: {
+        title: payload.title,
+        mealTime: payload.mealTime,
+        icon,
+        nutritionTips,
+      },
+    });
 
-  // return result;
+    await tx.nutritionItem.createMany({
+      data: itemsData.map((item) => ({
+        ...item,
+        nutritionId: nutrition.id,
+      })),
+    });
+
+    return nutrition;
+  });
+
+  return result;
 };
 
 const getNutritionsFromDb = async (
@@ -89,6 +111,9 @@ const getNutritionsFromDb = async (
         : {
             createdAt: "desc",
           },
+    include: {
+      nutritionItems: true,
+    },
   });
   const total = await prisma.nutrition.count({
     where: whereConditons,
@@ -107,6 +132,9 @@ const getNutritionsFromDb = async (
 const getSingleNutrition = async (id: string) => {
   const result = await prisma.nutrition.findFirst({
     where: { id },
+    include: {
+      nutritionItems: true,
+    },
   });
 
   if (!result) {
@@ -124,16 +152,13 @@ const updateNutrition = async (
   // const Nutrition = await prisma.nutrition.findFirst({
   //   where: { id },
   // });
-
   // if (!Nutrition) {
   //   throw new ApiError(httpStatus.NOT_FOUND, "Fitness Goal not found");
   // }
-
   // let icon = Nutrition.icon;
   // if (iconFile) {
   //   icon = (await fileUploader.uploadToDigitalOcean(iconFile)).Location;
   // }
-
   // let imageUrls: string[] = [];
   // if (Array.isArray(imageFile) && imageFile.length > 0) {
   //   imageUrls = await Promise.all(
@@ -143,18 +168,15 @@ const updateNutrition = async (
   //     })
   //   );
   // }
-
   // const images = [...(Nutrition.images ?? []), ...imageUrls];
-
   // const result = await prisma.nutrition.update({
   //   where: { id },
   //   data: { ...payload, images, icon },
   // });
-
   // return result;
 };
 
- const deleteNutrition = async (id: string) => {
+const deleteNutrition = async (id: string) => {
   await prisma.nutrition.delete({
     where: { id },
   });

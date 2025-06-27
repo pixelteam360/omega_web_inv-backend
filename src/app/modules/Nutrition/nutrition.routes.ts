@@ -13,12 +13,11 @@ router
   .get(NutritionController.getNutritions)
   .post(
     auth(UserRole.ADMIN),
-    fileUploader.nutrition,
+    fileUploader.upload.any(),
     (req: Request, res: Response, next: NextFunction) => {
       req.body = JSON.parse(req.body.data);
       next();
     },
-    validateRequest(NutritiontValidation.NutritiontValidationSchema),
     NutritionController.createNutrition
   );
 

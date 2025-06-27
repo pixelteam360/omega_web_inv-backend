@@ -170,9 +170,9 @@ model Nutrition {
 
 model NutritionItem {
   id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  images      String
+  image       String
   quantity    String
-  Kcal        Int
+  kcal        Int
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   nutritionId String    @db.ObjectId
