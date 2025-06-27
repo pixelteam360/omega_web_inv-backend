@@ -1,7 +1,6 @@
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { FitnessGoalService } from "./fitnessGoal.service";
-import pick from "../../../shared/pick";
 
 const createFitnessGoal = catchAsync(async (req, res) => {
   const result = await FitnessGoalService.createFitnessGoalIntoDb(req.body);
@@ -14,7 +13,7 @@ const createFitnessGoal = catchAsync(async (req, res) => {
 const getFitnessGoals = catchAsync(async (req, res) => {
   const result = await FitnessGoalService.getFitnessGoalsFromDb();
   sendResponse(res, {
-    message: "FitnessGoals retrieve successfully!",
+    message: "Fitness Goals retrieve successfully!",
     data: result,
   });
 });
@@ -22,7 +21,7 @@ const getFitnessGoals = catchAsync(async (req, res) => {
 const getSingleFitnessGoal = catchAsync(async (req, res) => {
   const result = await FitnessGoalService.getSingleFitnessGoal(req.params.id);
   sendResponse(res, {
-    message: "FitnessGoal profile retrieved successfully",
+    message: "Fitness Goal retrieved successfully",
     data: result,
   });
 });
@@ -33,7 +32,15 @@ const updateFitnessGoal = catchAsync(async (req, res) => {
     req.params.id
   );
   sendResponse(res, {
-    message: "Profile updated successfully!",
+    message: "Fitness Goal updated successfully!",
+    data: result,
+  });
+});
+
+const deleteFitnessGoal = catchAsync(async (req, res) => {
+  const result = await FitnessGoalService.deleteFitnessGoal(req.params.id);
+  sendResponse(res, {
+    message: "Fitness Goal deleted successfully!",
     data: result,
   });
 });
@@ -43,4 +50,5 @@ export const FitnessGoalController = {
   getFitnessGoals,
   getSingleFitnessGoal,
   updateFitnessGoal,
+  deleteFitnessGoal
 };

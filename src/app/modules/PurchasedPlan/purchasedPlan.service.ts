@@ -25,17 +25,12 @@ export const createPurchasedPlanIntoDb = async (
 
   const havePlan = await prisma.purchasedPlan.findFirst({
     where: { userId },
-    select: { id: true, activePlan: true },
+    select: { id: true, activePlan: true, endDate: true, startDate: true },
   });
 
-  if (havePlan?.activePlan) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      "You already have a active Plan"
-    );
-  }
-
-  const startDate = new Date();
+  const now = new Date();
+  const startDate =
+    havePlan && havePlan.endDate > now ? new Date(havePlan.endDate) : now;
 
   const endDate = new Date(
     startDate.getTime() + Plan.duration * 24 * 60 * 60 * 1000
@@ -49,7 +44,8 @@ export const createPurchasedPlanIntoDb = async (
         where: { id: havePlan.id, userId },
         data: {
           activePlan: true,
-          startDate: startDate,
+          startDate:
+            havePlan && havePlan.endDate > now ? havePlan.startDate : now,
           amount,
           planId: payload.planId,
           endDate,

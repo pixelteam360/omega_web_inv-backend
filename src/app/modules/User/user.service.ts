@@ -76,9 +76,15 @@ const createUserIntoDb = async (payload: TUser) => {
     select: { id: true },
   });
 
+  const { refferralCode, ...restData } = payload;
+
   await prisma.$transaction(async (prisma) => {
     const userData = await prisma.user.create({
-      data: { ...payload, password: hashedPassword, dailyGoal: { create: {} } },
+      data: {
+        ...restData,
+        password: hashedPassword,
+        dailyGoal: { create: {} },
+      },
       select: {
         id: true,
         email: true,

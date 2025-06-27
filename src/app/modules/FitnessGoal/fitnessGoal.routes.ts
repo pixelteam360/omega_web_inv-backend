@@ -19,6 +19,7 @@ router
 router
   .route("/:id")
   .get(auth(UserRole.ADMIN), FitnessGoalController.getSingleFitnessGoal)
-  .put(auth(UserRole.ADMIN), FitnessGoalController.updateFitnessGoal);
+  .put(auth(UserRole.ADMIN), FitnessGoalController.updateFitnessGoal)
+  .delete(auth(UserRole.ADMIN), FitnessGoalController.deleteFitnessGoal);
 
 export const FitnessGoalRoutes = router;
