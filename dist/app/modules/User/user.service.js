@@ -107,9 +107,10 @@ const createUserIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function
         where: { id: payload.refferralCode },
         select: { id: true },
     });
+    const { refferralCode } = payload, restData = __rest(payload, ["refferralCode"]);
     yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
         const userData = yield prisma.user.create({
-            data: Object.assign(Object.assign({}, payload), { password: hashedPassword, dailyGoal: { create: {} } }),
+            data: Object.assign(Object.assign({}, restData), { password: hashedPassword, dailyGoal: { create: {} } }),
             select: {
                 id: true,
                 email: true,

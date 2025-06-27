@@ -33,12 +33,10 @@ const createPurchasedPlanIntoDb = (payload, userId) => __awaiter(void 0, void 0,
     }
     const havePlan = yield prisma_1.default.purchasedPlan.findFirst({
         where: { userId },
-        select: { id: true, activePlan: true },
+        select: { id: true, activePlan: true, endDate: true, startDate: true },
     });
-    if (havePlan === null || havePlan === void 0 ? void 0 : havePlan.activePlan) {
-        throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You already have a active Plan");
-    }
-    const startDate = new Date();
+    const now = new Date();
+    const startDate = havePlan && havePlan.endDate > now ? new Date(havePlan.endDate) : now;
     const endDate = new Date(startDate.getTime() + Plan.duration * 24 * 60 * 60 * 1000);
     const amount = Plan.price;
     if (havePlan) {
@@ -47,7 +45,7 @@ const createPurchasedPlanIntoDb = (payload, userId) => __awaiter(void 0, void 0,
                 where: { id: havePlan.id, userId },
                 data: {
                     activePlan: true,
-                    startDate: startDate,
+                    startDate: havePlan && havePlan.endDate > now ? havePlan.startDate : now,
                     amount,
                     planId: payload.planId,
                     endDate,

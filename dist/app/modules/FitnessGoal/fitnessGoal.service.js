@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FitnessGoalService = void 0;
 const prisma_1 = __importDefault(require("../../../shared/prisma"));
+const ApiErrors_1 = __importDefault(require("../../../errors/ApiErrors"));
+const http_status_1 = __importDefault(require("http-status"));
 const createFitnessGoalIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.fitnessGoal.create({
         data: payload,
@@ -37,9 +39,24 @@ const updateFitnessGoal = (payload, FitnessGoalId) => __awaiter(void 0, void 0, 
     });
     return result;
 });
+const deleteFitnessGoal = (FitnessGoalId) => __awaiter(void 0, void 0, void 0, function* () {
+    const existingGoal = yield prisma_1.default.fitnessGoal.findUnique({
+        where: { id: FitnessGoalId },
+    });
+    if (!existingGoal) {
+        throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "Fitness goal not found");
+    }
+    const result = yield prisma_1.default.fitnessGoal.delete({
+        where: { id: FitnessGoalId },
+    });
+    return {
+        message: "Fitness goal deleted successfully",
+    };
+});
 exports.FitnessGoalService = {
     createFitnessGoalIntoDb,
     getFitnessGoalsFromDb,
     getSingleFitnessGoal,
     updateFitnessGoal,
+    deleteFitnessGoal,
 };

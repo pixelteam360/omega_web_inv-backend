@@ -26,21 +26,28 @@ const createFitnessGoal = (0, catchAsync_1.default)((req, res) => __awaiter(void
 const getFitnessGoals = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield fitnessGoal_service_1.FitnessGoalService.getFitnessGoalsFromDb();
     (0, sendResponse_1.default)(res, {
-        message: "FitnessGoals retrieve successfully!",
+        message: "Fitness Goals retrieve successfully!",
         data: result,
     });
 }));
 const getSingleFitnessGoal = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield fitnessGoal_service_1.FitnessGoalService.getSingleFitnessGoal(req.params.id);
     (0, sendResponse_1.default)(res, {
-        message: "FitnessGoal profile retrieved successfully",
+        message: "Fitness Goal retrieved successfully",
         data: result,
     });
 }));
 const updateFitnessGoal = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield fitnessGoal_service_1.FitnessGoalService.updateFitnessGoal(req.body, req.params.id);
     (0, sendResponse_1.default)(res, {
-        message: "Profile updated successfully!",
+        message: "Fitness Goal updated successfully!",
+        data: result,
+    });
+}));
+const deleteFitnessGoal = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield fitnessGoal_service_1.FitnessGoalService.deleteFitnessGoal(req.params.id);
+    (0, sendResponse_1.default)(res, {
+        message: "Fitness Goal deleted successfully!",
         data: result,
     });
 }));
@@ -49,4 +56,5 @@ exports.FitnessGoalController = {
     getFitnessGoals,
     getSingleFitnessGoal,
     updateFitnessGoal,
+    deleteFitnessGoal
 };

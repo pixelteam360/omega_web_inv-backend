@@ -18,5 +18,6 @@ router
 router
     .route("/:id")
     .get((0, auth_1.default)(client_1.UserRole.ADMIN), fitnessGoal_controller_1.FitnessGoalController.getSingleFitnessGoal)
-    .put((0, auth_1.default)(client_1.UserRole.ADMIN), fitnessGoal_controller_1.FitnessGoalController.updateFitnessGoal);
+    .put((0, auth_1.default)(client_1.UserRole.ADMIN), fitnessGoal_controller_1.FitnessGoalController.updateFitnessGoal)
+    .delete((0, auth_1.default)(client_1.UserRole.ADMIN), fitnessGoal_controller_1.FitnessGoalController.deleteFitnessGoal);
 exports.FitnessGoalRoutes = router;
