@@ -19,7 +19,7 @@ const creatMealPlansIntoDb = async (payload: TMealPlans, userId: string) => {
   if (workoutPlan) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
-      "You have already added this workout. You need to complete this fisrt"
+      "You have already added this meal plan. You need to complete this first"
     );
   }
 
@@ -36,7 +36,17 @@ const myMealPlans = async (userId: string) => {
     select: {
       id: true,
       isCompleted: true,
-      nutrition: true,
+      nutrition: {
+        select: {
+          id: true,
+          title: true,
+          mealTime: true,
+          fitnessGoal: true,
+          icon: true,
+          nutritionTips: true,
+          nutritionItems: true,
+        },
+      },
     },
   });
 
@@ -49,7 +59,17 @@ const getSinglMealPlans = async (id: string) => {
     select: {
       id: true,
       isCompleted: true,
-      nutrition: true,
+      nutrition: {
+        select: {
+          id: true,
+          title: true,
+          mealTime: true,
+          fitnessGoal: true,
+          icon: true,
+          nutritionTips: true,
+          nutritionItems: true,
+        },
+      },
     },
   });
 

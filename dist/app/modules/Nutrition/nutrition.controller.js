@@ -19,12 +19,7 @@ const nutrition_service_1 = require("./nutrition.service");
 const pick_1 = __importDefault(require("../../../shared/pick"));
 const nutrition_costant_1 = require("./nutrition.costant");
 const createNutrition = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const files = req.files;
-    const iconFile = Array.isArray(files === null || files === void 0 ? void 0 : files.icon) && files.icon.length > 0
-        ? files.icon[0]
-        : undefined;
-    const iamgeFile = Array.isArray(files === null || files === void 0 ? void 0 : files.images) && files.images.length > 0 ? files.images : [];
-    const result = yield nutrition_service_1.NutritionService.createNutritionIntoDb(req.body, iconFile, iamgeFile);
+    const result = yield nutrition_service_1.NutritionService.createNutritionIntoDb(req.body, req.files);
     (0, sendResponse_1.default)(res, {
         message: "Nutrition created successfully!",
         data: result,
@@ -51,10 +46,12 @@ const updateNutrition = (0, catchAsync_1.default)((req, res) => __awaiter(void 0
     const iconFile = Array.isArray(files === null || files === void 0 ? void 0 : files.icon) && files.icon.length > 0
         ? files.icon[0]
         : undefined;
-    const imageFile = Array.isArray(files === null || files === void 0 ? void 0 : files.images) && files.images.length > 0 ? files.images : [];
-    const result = yield nutrition_service_1.NutritionService.updateNutrition(req.body, req.params.id, iconFile, imageFile);
+    const nutritionTipsFile = Array.isArray(files === null || files === void 0 ? void 0 : files.nutritionTips) && files.nutritionTips.length > 0
+        ? files.nutritionTips[0]
+        : undefined;
+    const result = yield nutrition_service_1.NutritionService.updateNutrition(req.body, req.params.id, iconFile, nutritionTipsFile);
     (0, sendResponse_1.default)(res, {
-        message: "Profile updated successfully!",
+        message: "Nutrition updated successfully!",
         data: result,
     });
 }));

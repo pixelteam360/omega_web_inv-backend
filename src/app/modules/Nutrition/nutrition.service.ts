@@ -44,12 +44,13 @@ const createNutritionIntoDb = async (payload: TNutrition, files: any) => {
       };
     })
   );
-
+  console.log(itemsData);
   const result = await prisma.$transaction(async (tx) => {
     const nutrition = await tx.nutrition.create({
       data: {
         title: payload.title,
         mealTime: payload.mealTime,
+        fitnessGoal: payload.fitnessGoal || "",
         icon,
         nutritionTips,
       },
@@ -64,7 +65,7 @@ const createNutritionIntoDb = async (payload: TNutrition, files: any) => {
 
     return nutrition;
   });
-
+  console.log(result);
   return result;
 };
 
@@ -147,41 +148,67 @@ const updateNutrition = async (
   payload: Partial<TNutrition>,
   id: string,
   iconFile: any,
-  imageFile: any
+  nutritionTipsFile: any
 ) => {
-  // const Nutrition = await prisma.nutrition.findFirst({
-  //   where: { id },
-  // });
-  // if (!Nutrition) {
-  //   throw new ApiError(httpStatus.NOT_FOUND, "Fitness Goal not found");
-  // }
-  // let icon = Nutrition.icon;
-  // if (iconFile) {
-  //   icon = (await fileUploader.uploadToDigitalOcean(iconFile)).Location;
-  // }
-  // let imageUrls: string[] = [];
-  // if (Array.isArray(imageFile) && imageFile.length > 0) {
-  //   imageUrls = await Promise.all(
-  //     imageFile.map(async (image: any) => {
-  //       const uploaded = await fileUploader.uploadToDigitalOcean(image);
-  //       return uploaded.Location;
-  //     })
-  //   );
-  // }
-  // const images = [...(Nutrition.images ?? []), ...imageUrls];
-  // const result = await prisma.nutrition.update({
-  //   where: { id },
-  //   data: { ...payload, images, icon },
-  // });
-  // return result;
-};
-
-const deleteNutrition = async (id: string) => {
-  await prisma.nutrition.delete({
+  const existingNutrition = await prisma.nutrition.findUnique({
     where: { id },
   });
 
-  return { message: "Nutrition deleted successfully" };
+  if (!existingNutrition) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Nutrition not found");
+  }
+
+  let icon = existingNutrition.icon;
+  if (iconFile) {
+    icon = (await fileUploader.uploadToDigitalOcean(iconFile)).Location;
+  }
+
+  let nutritionTips = existingNutrition.nutritionTips;
+  if (nutritionTipsFile) {
+    nutritionTips = (await fileUploader.uploadToDigitalOcean(nutritionTipsFile))
+      .Location;
+  }
+
+  const result = await prisma.nutrition.update({
+    where: { id },
+    data: {
+      title: payload.title,
+      mealTime: payload.mealTime,
+      fitnessGoal: payload.fitnessGoal,
+      icon,
+      nutritionTips,
+    },
+  });
+
+  return result;
+};
+
+const deleteNutrition = async (id: string) => {
+  const existingNutrition = await prisma.nutrition.findUnique({
+    where: { id },
+  });
+
+  if (!existingNutrition) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Nutrition not found");
+  }
+
+  const result = await prisma.$transaction(async (tx) => {
+    await tx.mealPlans.deleteMany({
+      where: { nutritionId: id },
+    });
+
+    await tx.nutritionItem.deleteMany({
+      where: { nutritionId: id },
+    });
+
+    await tx.nutrition.delete({
+      where: { id },
+    });
+
+    return { message: "Nutrition deleted successfully" };
+  });
+
+  return result;
 };
 
 export const NutritionService = {

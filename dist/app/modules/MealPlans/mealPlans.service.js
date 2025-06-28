@@ -27,7 +27,7 @@ const creatMealPlansIntoDb = (payload, userId) => __awaiter(void 0, void 0, void
         where: { userId, nutritionId: nutrition.id, isCompleted: false },
     });
     if (workoutPlan) {
-        throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You have already added this workout. You need to complete this fisrt");
+        throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You have already added this meal plan. You need to complete this first");
     }
     const result = yield prisma_1.default.mealPlans.create({
         data: Object.assign(Object.assign({}, payload), { userId }),
@@ -40,7 +40,17 @@ const myMealPlans = (userId) => __awaiter(void 0, void 0, void 0, function* () {
         select: {
             id: true,
             isCompleted: true,
-            nutrition: true,
+            nutrition: {
+                select: {
+                    id: true,
+                    title: true,
+                    mealTime: true,
+                    fitnessGoal: true,
+                    icon: true,
+                    nutritionTips: true,
+                    nutritionItems: true,
+                },
+            },
         },
     });
     return result;
@@ -51,7 +61,17 @@ const getSinglMealPlans = (id) => __awaiter(void 0, void 0, void 0, function* ()
         select: {
             id: true,
             isCompleted: true,
-            nutrition: true,
+            nutrition: {
+                select: {
+                    id: true,
+                    title: true,
+                    mealTime: true,
+                    fitnessGoal: true,
+                    icon: true,
+                    nutritionTips: true,
+                    nutritionItems: true,
+                },
+            },
         },
     });
     if (!result) {

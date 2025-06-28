@@ -35,11 +35,10 @@ const userProgress = async (id: string) => {
     where: { id },
     select: {
       id: true,
-      userInfo: {
-        select: { image: true, fullName: true },
-      },
+      userInfo: true,
       bodyMeasurement: true,
       weightProgress: true,
+      purchasedPlan: true,
     },
   });
 
@@ -47,6 +46,7 @@ const userProgress = async (id: string) => {
     where: { userId: id },
     select: { id: true, isCompleted: true, workout: true },
   });
+
   const meal = await prisma.mealPlans.findMany({
     where: { userId: id },
     select: {

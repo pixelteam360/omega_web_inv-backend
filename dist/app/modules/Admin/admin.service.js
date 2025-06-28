@@ -46,20 +46,23 @@ const userProgress = (id) => __awaiter(void 0, void 0, void 0, function* () {
         where: { id },
         select: {
             id: true,
-            userInfo: {
-                select: { image: true, fullName: true },
-            },
+            userInfo: true,
             bodyMeasurement: true,
             weightProgress: true,
+            purchasedPlan: true,
         },
     });
     const workout = yield prisma_1.default.workoutPlans.findMany({
         where: { userId: id },
-        select: { workout: true },
+        select: { id: true, isCompleted: true, workout: true },
     });
     const meal = yield prisma_1.default.mealPlans.findMany({
         where: { userId: id },
-        select: { nutrition: true },
+        select: {
+            id: true,
+            isCompleted: true,
+            nutrition: true,
+        },
     });
     return Object.assign(Object.assign({}, res), { workout, meal });
 });

@@ -5,8 +5,6 @@ import pick from "../../../shared/pick";
 import { nutritionFilterableFields } from "./nutrition.costant";
 
 const createNutrition = catchAsync(async (req, res) => {
-  const files = req.files as any;
-
   const result = await NutritionService.createNutritionIntoDb(
     req.body,
     req.files
@@ -36,24 +34,26 @@ const getSingleNutrition = catchAsync(async (req, res) => {
 });
 
 const updateNutrition = catchAsync(async (req, res) => {
-  const files = req.files as any;
+    const files = req.files as any;
 
   const iconFile =
     Array.isArray(files?.icon) && files.icon.length > 0
       ? files.icon[0]
       : undefined;
 
-  const imageFile =
-    Array.isArray(files?.images) && files.images.length > 0 ? files.images : [];
+  const nutritionTipsFile =
+    Array.isArray(files?.nutritionTips) && files.nutritionTips.length > 0
+      ? files.nutritionTips[0]
+      : undefined;
 
   const result = await NutritionService.updateNutrition(
     req.body,
     req.params.id,
     iconFile,
-    imageFile
+    nutritionTipsFile
   );
   sendResponse(res, {
-    message: "Profile updated successfully!",
+    message: "Nutrition updated successfully!",
     data: result,
   });
 });

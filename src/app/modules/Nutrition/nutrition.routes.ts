@@ -28,7 +28,7 @@ router
     NutritionController.getSingleNutrition
   )
   .put(
-    auth(UserRole.ADMIN, UserRole.USER),
+    auth(UserRole.ADMIN),
     fileUploader.nutrition,
     (req: Request, res: Response, next: NextFunction) => {
       req.body = JSON.parse(req.body.data);
@@ -38,7 +38,7 @@ router
     NutritionController.updateNutrition
   )
   .delete(
-    auth(UserRole.ADMIN, UserRole.USER),
+    auth(UserRole.ADMIN),
     NutritionController.deleteNutrition
   );
 

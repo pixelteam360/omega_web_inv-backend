@@ -1,16 +1,15 @@
+import { MealTime } from "@prisma/client";
 import { z } from "zod";
 
 const NutritiontValidationSchema = z.object({
   title: z.string(),
-  duration: z.string(),
-  Kcal: z.number().int(),
-  fitnessGoal: z.string(),
+  mealTime: z.nativeEnum(MealTime),
+  fitnessGoal: z.string().optional(),
 });
 
 const NutritiontUpdateSchema = z.object({
   title: z.string().optional(),
-  duration: z.string().optional(),
-  Kcal: z.number().int().optional(),
+  mealTime: z.nativeEnum(MealTime).optional(),
   fitnessGoal: z.string().optional(),
 });
 

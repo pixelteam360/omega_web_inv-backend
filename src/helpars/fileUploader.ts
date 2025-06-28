@@ -58,7 +58,7 @@ const workout = upload.fields([
 
 const nutrition = upload.fields([
   { name: "icon", maxCount: 1 },
-  { name: "images", maxCount: 15 },
+  { name: "nutritionTips", maxCount: 15 },
 ]);
 
 const post = upload.fields([
