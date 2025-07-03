@@ -38,7 +38,16 @@ const userProgress = async (id: string) => {
       userInfo: true,
       bodyMeasurement: true,
       weightProgress: true,
-      purchasedPlan: true,
+      purchasedPlan: {
+        select: {
+          id: true,
+          activePlan: true,
+          startDate: true,
+          endDate: true,
+          amount: true,
+          Plan: true,
+        },
+      },
     },
   });
 
@@ -56,7 +65,11 @@ const userProgress = async (id: string) => {
     },
   });
 
-  return { ...res, workout, meal };
+  const startWeight = res?.weightProgress?.[0]?.weight || 0;
+  const endWeight =
+    res?.weightProgress?.[res?.weightProgress?.length - 1]?.weight || 0;
+
+  return { ...res, startWeight, endWeight, workout, meal };
 };
 
 const createDiscountCode = async (payload: TDiscountCode) => {

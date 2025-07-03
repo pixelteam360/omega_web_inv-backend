@@ -14,6 +14,21 @@ const createPostIntoDb = async (
   imageFile: any,
   videoFile: any
 ) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      activePlan: true,
+    },
+  });
+
+  if (user?.activePlan === false) {
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      "You are not allowed to create posts. Please activate your plan."
+    );
+  }
+
   let video = "";
   if (videoFile) {
     video = (await fileUploader.uploadToDigitalOcean(videoFile)).Location;
@@ -84,7 +99,15 @@ const getPostsFromDb = async (
       description: true,
       images: true,
       video: true,
-      userId: true,
+      createdAt: true,
+      user: {
+        select: {
+          id: true,
+          userInfo: {
+            select: { image: true, fullName: true },
+          },
+        },
+      },
       _count: true,
     },
   });
@@ -102,23 +125,87 @@ const getPostsFromDb = async (
   };
 };
 
-const getSinglePost = async (id: string) => {
-  const PostProfile = await prisma.post.findUnique({
-    where: { id },
+const getMyPosts = async (userId: string) => {
+  const posts = await prisma.post.findMany({
+    where: { userId, isDeleted: false },
     select: {
       id: true,
       description: true,
       images: true,
       video: true,
-      postComment: true,
-      postLike: true,
+      createdAt: true,
+      user: {
+        select: {
+          id: true,
+          userInfo: {
+            select: { image: true, fullName: true },
+          },
+        },
+      },
+      _count: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return posts;
+};
+
+const getSinglePost = async (id: string) => {
+  const post = await prisma.post.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      postComment: {
+        select: {
+          id: true,
+          comment: true,
+          createdAt: true,
+          userId: true,
+          postId: true,
+          user: {
+            select: { userInfo: { select: { image: true, fullName: true } } },
+          },
+        },
+      },
     },
   });
 
-  return PostProfile;
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Post not found");
+  }
+
+  const reshapedPost = {
+    id: post.id,
+    postComment: post.postComment.map((comment) => ({
+      id: comment.id,
+      comment: comment.comment,
+      image: comment.user?.userInfo?.image ?? null,
+      fullName: comment.user?.userInfo?.fullName ?? null,
+      createdAt: comment.createdAt,
+      userId: comment.userId,
+      postId: comment.postId,
+    })),
+  };
+
+  return reshapedPost;
 };
 
 const giveLikeToPost = async (postId: string, userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      activePlan: true,
+    },
+  });
+
+  if (user?.activePlan === false) {
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      "You are not allowed to like the posts. Please activate your plan."
+    );
+  }
+
   const post = await prisma.post.findFirst({
     where: { id: postId },
   });
@@ -162,6 +249,21 @@ const commentAPost = async (
   postId: string,
   userId: string
 ) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      activePlan: true,
+    },
+  });
+
+  if (user?.activePlan === false) {
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      "You are not allowed to comment the posts. Please activate your plan."
+    );
+  }
+
   const post = await prisma.post.findFirst({
     where: { id: postId },
   });
@@ -177,11 +279,39 @@ const commentAPost = async (
   return result;
 };
 
+const deletePost = async (postId: string, userId: string) => {
+  const post = await prisma.post.findFirst({
+    where: { id: postId, userId },
+  });
+
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Your post not found");
+  }
+
+  const res = await prisma.$transaction(async (prisma) => {
+    await prisma.postComment.deleteMany({
+      where: { postId },
+    });
+
+    await prisma.postLike.deleteMany({
+      where: { postId },
+    });
+
+    await prisma.post.delete({
+      where: { id: postId },
+    });
+  });
+
+  return { message: "Post deleted successfully" };
+};
+
 export const PostService = {
   createPostIntoDb,
   getPostsFromDb,
   getSinglePost,
+  deletePost,
   giveLikeToPost,
   myLikedPost,
   commentAPost,
+  getMyPosts,
 };

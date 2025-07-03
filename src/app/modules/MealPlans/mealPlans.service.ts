@@ -23,6 +23,22 @@ const creatMealPlansIntoDb = async (payload: TMealPlans, userId: string) => {
     );
   }
 
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, activePlan: true },
+  });
+
+  const mealPlansCount = await prisma.mealPlans.count({
+    where: { userId },
+  });
+
+  if (mealPlansCount >= 5 && user?.activePlan === false) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You can only add up to 5 meal in free plan"
+    );
+  }
+
   const result = await prisma.mealPlans.create({
     data: { ...payload, userId },
   });
@@ -82,15 +98,46 @@ const getSinglMealPlans = async (id: string) => {
 const makeCompletedMealPlans = async (userId: string, MealPlansId: string) => {
   const MealPlans = await prisma.mealPlans.findFirst({
     where: { id: MealPlansId, userId },
+    select: {
+      id: true,
+      isCompleted: true,
+      nutrition: {
+        select: {
+          nutritionItems: { select: { id: true, kcal: true } },
+        },
+      },
+    },
   });
 
   if (!MealPlans) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Workout not found");
+    throw new ApiError(httpStatus.NOT_FOUND, "Meal Plan not found");
   }
 
-  const result = await prisma.mealPlans.update({
-    where: { id: MealPlans.id },
-    data: { isCompleted: true },
+  const dailyGoal = await prisma.dailyGoal.findFirst({
+    where: { userId },
+    select: { id: true, CaloriesConsumed: true },
+  });
+
+  const newCalories =
+    dailyGoal?.CaloriesConsumed! +
+    MealPlans.nutrition.nutritionItems.reduce(
+      (acc, item) => acc + item.kcal,
+      0
+    );
+
+  const result = await prisma.$transaction(async (prisma) => {
+    const updatePlan = await prisma.mealPlans.update({
+      where: { id: MealPlans.id },
+      data: { isCompleted: true },
+    });
+    if (!updatePlan) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Meal Plan not found");
+    }
+    await prisma.dailyGoal.update({
+      where: { id: dailyGoal?.id },
+      data: { CaloriesConsumed: newCalories },
+    });
+    return updatePlan;
   });
 
   return result;

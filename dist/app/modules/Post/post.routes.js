@@ -20,10 +20,14 @@ router
     next();
 }, (0, validateRequest_1.default)(post_validation_1.PostValidation.PostValidationSchema), post_controller_1.PostController.createPost);
 router
+    .route("/my")
+    .get((0, auth_1.default)(client_1.UserRole.USER, client_1.UserRole.ADMIN), post_controller_1.PostController.getMyPosts);
+router
     .route("/:id")
     .get((0, auth_1.default)(client_1.UserRole.ADMIN, client_1.UserRole.USER), post_controller_1.PostController.getSinglePost)
     .patch((0, auth_1.default)(client_1.UserRole.ADMIN, client_1.UserRole.USER), post_controller_1.PostController.giveLikeToPost)
-    .post((0, auth_1.default)(client_1.UserRole.ADMIN, client_1.UserRole.USER), post_controller_1.PostController.commentAPost);
+    .post((0, auth_1.default)(client_1.UserRole.ADMIN, client_1.UserRole.USER), post_controller_1.PostController.commentAPost)
+    .delete((0, auth_1.default)(client_1.UserRole.ADMIN, client_1.UserRole.USER), post_controller_1.PostController.deletePost);
 router
     .route("/engagement/:id")
     .get((0, auth_1.default)(client_1.UserRole.ADMIN, client_1.UserRole.USER), post_controller_1.PostController.myLikedPost);

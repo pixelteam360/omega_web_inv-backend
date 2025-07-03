@@ -42,6 +42,7 @@ const dashboardOverView = () => __awaiter(void 0, void 0, void 0, function* () {
     };
 });
 const userProgress = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d, _e;
     const res = yield prisma_1.default.user.findUnique({
         where: { id },
         select: {
@@ -49,7 +50,16 @@ const userProgress = (id) => __awaiter(void 0, void 0, void 0, function* () {
             userInfo: true,
             bodyMeasurement: true,
             weightProgress: true,
-            purchasedPlan: true,
+            purchasedPlan: {
+                select: {
+                    id: true,
+                    activePlan: true,
+                    startDate: true,
+                    endDate: true,
+                    amount: true,
+                    Plan: true,
+                },
+            },
         },
     });
     const workout = yield prisma_1.default.workoutPlans.findMany({
@@ -64,7 +74,9 @@ const userProgress = (id) => __awaiter(void 0, void 0, void 0, function* () {
             nutrition: true,
         },
     });
-    return Object.assign(Object.assign({}, res), { workout, meal });
+    const startWeight = ((_b = (_a = res === null || res === void 0 ? void 0 : res.weightProgress) === null || _a === void 0 ? void 0 : _a[0]) === null || _b === void 0 ? void 0 : _b.weight) || 0;
+    const endWeight = ((_e = (_c = res === null || res === void 0 ? void 0 : res.weightProgress) === null || _c === void 0 ? void 0 : _c[((_d = res === null || res === void 0 ? void 0 : res.weightProgress) === null || _d === void 0 ? void 0 : _d.length) - 1]) === null || _e === void 0 ? void 0 : _e.weight) || 0;
+    return Object.assign(Object.assign({}, res), { startWeight, endWeight, workout, meal });
 });
 const createDiscountCode = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const discount = yield prisma_1.default.discountCode.findFirst({

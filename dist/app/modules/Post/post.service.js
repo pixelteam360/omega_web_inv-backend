@@ -85,7 +85,15 @@ const getPostsFromDb = (params, options) => __awaiter(void 0, void 0, void 0, fu
             description: true,
             images: true,
             video: true,
-            userId: true,
+            createdAt: true,
+            user: {
+                select: {
+                    id: true,
+                    userInfo: {
+                        select: { image: true, fullName: true },
+                    },
+                },
+            },
             _count: true,
         },
     });
@@ -101,19 +109,67 @@ const getPostsFromDb = (params, options) => __awaiter(void 0, void 0, void 0, fu
         data: result,
     };
 });
-const getSinglePost = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const PostProfile = yield prisma_1.default.post.findUnique({
-        where: { id },
+const getMyPosts = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const posts = yield prisma_1.default.post.findMany({
+        where: { userId, isDeleted: false },
         select: {
             id: true,
             description: true,
             images: true,
             video: true,
-            postComment: true,
-            postLike: true,
+            createdAt: true,
+            user: {
+                select: {
+                    id: true,
+                    userInfo: {
+                        select: { image: true, fullName: true },
+                    },
+                },
+            },
+            _count: true,
+        },
+        orderBy: { createdAt: "desc" },
+    });
+    return posts;
+});
+const getSinglePost = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const post = yield prisma_1.default.post.findUnique({
+        where: { id },
+        select: {
+            id: true,
+            postComment: {
+                select: {
+                    id: true,
+                    comment: true,
+                    createdAt: true,
+                    userId: true,
+                    postId: true,
+                    user: {
+                        select: { userInfo: { select: { image: true, fullName: true } } },
+                    },
+                },
+            },
         },
     });
-    return PostProfile;
+    if (!post) {
+        throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "Post not found");
+    }
+    const reshapedPost = {
+        id: post.id,
+        postComment: post.postComment.map((comment) => {
+            var _a, _b, _c, _d, _e, _f;
+            return ({
+                id: comment.id,
+                comment: comment.comment,
+                image: (_c = (_b = (_a = comment.user) === null || _a === void 0 ? void 0 : _a.userInfo) === null || _b === void 0 ? void 0 : _b.image) !== null && _c !== void 0 ? _c : null,
+                fullName: (_f = (_e = (_d = comment.user) === null || _d === void 0 ? void 0 : _d.userInfo) === null || _e === void 0 ? void 0 : _e.fullName) !== null && _f !== void 0 ? _f : null,
+                createdAt: comment.createdAt,
+                userId: comment.userId,
+                postId: comment.postId,
+            });
+        }),
+    };
+    return reshapedPost;
 });
 const giveLikeToPost = (postId, userId) => __awaiter(void 0, void 0, void 0, function* () {
     const post = yield prisma_1.default.post.findFirst({
@@ -159,11 +215,33 @@ const commentAPost = (payload, postId, userId) => __awaiter(void 0, void 0, void
     });
     return result;
 });
+const deletePost = (postId, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const post = yield prisma_1.default.post.findFirst({
+        where: { id: postId, userId },
+    });
+    if (!post) {
+        throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "Your post not found");
+    }
+    const res = yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
+        yield prisma.postComment.deleteMany({
+            where: { postId },
+        });
+        yield prisma.postLike.deleteMany({
+            where: { postId },
+        });
+        yield prisma.post.delete({
+            where: { id: postId },
+        });
+    }));
+    return { message: "Post deleted successfully" };
+});
 exports.PostService = {
     createPostIntoDb,
     getPostsFromDb,
     getSinglePost,
+    deletePost,
     giveLikeToPost,
     myLikedPost,
     commentAPost,
+    getMyPosts,
 };

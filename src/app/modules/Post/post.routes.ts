@@ -23,10 +23,15 @@ router
   );
 
 router
+  .route("/my")
+  .get(auth(UserRole.USER, UserRole.ADMIN), PostController.getMyPosts);
+
+router
   .route("/:id")
   .get(auth(UserRole.ADMIN, UserRole.USER), PostController.getSinglePost)
   .patch(auth(UserRole.ADMIN, UserRole.USER), PostController.giveLikeToPost)
-  .post(auth(UserRole.ADMIN, UserRole.USER), PostController.commentAPost);
+  .post(auth(UserRole.ADMIN, UserRole.USER), PostController.commentAPost)
+  .delete(auth(UserRole.ADMIN, UserRole.USER), PostController.deletePost);
 
 router
   .route("/engagement/:id")

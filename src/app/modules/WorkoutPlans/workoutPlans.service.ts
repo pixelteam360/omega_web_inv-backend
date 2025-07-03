@@ -22,7 +22,23 @@ const creatWorkoutPlansIntoDb = async (
   if (workoutPlan) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
-      "You have already added this workout"
+      "You have already added this meal plan. You need to complete this first"
+    );
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, activePlan: true },
+  });
+
+  const workoutPlansCount = await prisma.workoutPlans.count({
+    where: { userId },
+  });
+
+  if (workoutPlansCount >= 5 && user?.activePlan === false) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You can only add up to 5 workout in free plan"
     );
   }
 
@@ -68,16 +84,28 @@ const makeCompletedWorkoutPlans = async (
 ) => {
   const WorkoutPlans = await prisma.workoutPlans.findFirst({
     where: { id: WorkoutPlansId, userId },
-    include: { workout: true },
+    select: {
+      id: true,
+      isCompleted: true,
+      workout: {
+        select: {
+          id: true,
+          Kcal: true,
+        },
+      },
+    },
   });
 
   if (!WorkoutPlans) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Workout not found");
+    throw new ApiError(httpStatus.NOT_FOUND, "Workout Plans not found");
   }
 
   const dailyGoal = await prisma.dailyGoal.findFirst({
     where: { userId },
+    select: { id: true, CaloriesBurned: true },
   });
+
+  const totalBurned = dailyGoal?.CaloriesBurned! + WorkoutPlans.workout.Kcal;
 
   const result = await prisma.$transaction(async (prisma) => {
     const updatePlan = await prisma.workoutPlans.update({
@@ -87,7 +115,7 @@ const makeCompletedWorkoutPlans = async (
 
     await prisma.dailyGoal.update({
       where: { id: dailyGoal?.id },
-      data: { CaloriesBurned: WorkoutPlans.workout.Kcal },
+      data: { CaloriesBurned: totalBurned },
     });
 
     return updatePlan;

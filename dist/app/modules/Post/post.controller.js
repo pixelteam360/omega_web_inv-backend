@@ -37,10 +37,17 @@ const getPosts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 
         data: result,
     });
 }));
+const getMyPosts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield post_service_1.PostService.getMyPosts(req.user.id);
+    (0, sendResponse_1.default)(res, {
+        message: "Post retrieved successfully",
+        data: result,
+    });
+}));
 const getSinglePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield post_service_1.PostService.getSinglePost(req.params.id);
     (0, sendResponse_1.default)(res, {
-        message: "Post profile retrieved successfully",
+        message: "Post retrieved successfully",
         data: result,
     });
 }));
@@ -65,6 +72,13 @@ const commentAPost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         data: result,
     });
 }));
+const deletePost = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield post_service_1.PostService.deletePost(req.params.id, req.user.id);
+    (0, sendResponse_1.default)(res, {
+        message: "Post deleted successfully",
+        data: result,
+    });
+}));
 exports.PostController = {
     createPost,
     getPosts,
@@ -72,4 +86,6 @@ exports.PostController = {
     giveLikeToPost,
     myLikedPost,
     commentAPost,
+    getMyPosts,
+    deletePost
 };

@@ -82,14 +82,39 @@ const getSinglMealPlans = (id) => __awaiter(void 0, void 0, void 0, function* ()
 const makeCompletedMealPlans = (userId, MealPlansId) => __awaiter(void 0, void 0, void 0, function* () {
     const MealPlans = yield prisma_1.default.mealPlans.findFirst({
         where: { id: MealPlansId, userId },
+        select: {
+            id: true,
+            isCompleted: true,
+            nutrition: {
+                select: {
+                    nutritionItems: { select: { id: true, kcal: true } },
+                },
+            },
+        },
     });
     if (!MealPlans) {
-        throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "Workout not found");
+        throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "Meal Plan not found");
     }
-    const result = yield prisma_1.default.mealPlans.update({
-        where: { id: MealPlans.id },
-        data: { isCompleted: true },
+    const dailyGoal = yield prisma_1.default.dailyGoal.findFirst({
+        where: { userId },
+        select: { id: true, CaloriesConsumed: true },
     });
+    const newCalories = (dailyGoal === null || dailyGoal === void 0 ? void 0 : dailyGoal.CaloriesConsumed) +
+        MealPlans.nutrition.nutritionItems.reduce((acc, item) => acc + item.kcal, 0);
+    const result = yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
+        const updatePlan = yield prisma.mealPlans.update({
+            where: { id: MealPlans.id },
+            data: { isCompleted: true },
+        });
+        if (!updatePlan) {
+            throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "Meal Plan not found");
+        }
+        yield prisma.dailyGoal.update({
+            where: { id: dailyGoal === null || dailyGoal === void 0 ? void 0 : dailyGoal.id },
+            data: { CaloriesConsumed: newCalories },
+        });
+        return updatePlan;
+    }));
     return result;
 });
 const deletMealPlans = () => __awaiter(void 0, void 0, void 0, function* () {

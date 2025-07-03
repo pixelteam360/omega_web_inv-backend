@@ -229,7 +229,20 @@ const getMyProfile = async (userEmail: string) => {
       }
     : {};
 
-  return { ...userProfile, dailyGoal: updatedDailyGoal };
+  const result = await prisma.weightProgress.findMany({
+    where: { userId: userProfile?.id },
+  });
+
+  const startWeight = result.length ? result[0].weight : 0;
+
+  const endWeight = result.length > 1 ? result[result.length - 1].weight : 0;
+
+  return {
+    ...userProfile,
+    dailyGoal: updatedDailyGoal,
+    startWeight,
+    endWeight,
+  };
 };
 
 const updateProfile = async (payload: TUser, userId: string) => {

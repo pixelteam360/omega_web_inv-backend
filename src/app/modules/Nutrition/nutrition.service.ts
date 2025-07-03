@@ -7,6 +7,8 @@ import { fileUploader } from "../../../helpars/fileUploader";
 import { INutritionFilterRequest, TNutrition } from "./nutrition.interface";
 import httpStatus from "http-status";
 import { nutritionSearchAbleFields } from "./nutrition.costant";
+import axios from "axios";
+import config from "../../../config";
 
 const createNutritionIntoDb = async (payload: TNutrition, files: any) => {
   const iconFile = files.find((file: any) => file.fieldname === "icon");
@@ -211,10 +213,52 @@ const deleteNutrition = async (id: string) => {
   return result;
 };
 
+const edamamData = async () => {
+
+  const items = [
+    "rice",
+    "chicken",
+    "cheese",
+    "egg",
+    "bread",
+    "beef",
+    "milk",
+    "pasta",
+    "banana",
+    "spinach",
+  ];
+
+  try {
+    const res = await axios.get(
+      "https://api.edamam.com/api/food-database/v2/parser",
+      {
+        params: {
+          app_id: config.edamam.app_id,
+          app_key: config.edamam.app_key,
+          ingr: items.join(","),
+        },
+      }
+    );
+
+    // const food = res.data.hints.find(
+    //   (item) => item.food.foodId === "food_a9al1uoaczd7p8bv3g9vebl5erqx"
+    // );
+    // if (!food) {
+    //   throw new ApiError(httpStatus.NOT_FOUND, "Food not found");
+    // }
+
+    return res.data.hints;
+  } catch (error: any) {
+    console.error(error.response?.data || error.message);
+    throw new Error("Failed to fetch food data");
+  }
+};
+
 export const NutritionService = {
   createNutritionIntoDb,
   getNutritionsFromDb,
   getSingleNutrition,
+  edamamData,
   updateNutrition,
   deleteNutrition,
 };

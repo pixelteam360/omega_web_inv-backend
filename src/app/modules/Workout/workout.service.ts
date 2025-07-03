@@ -155,11 +155,19 @@ const updateWorkout = async (
 };
 
 const deleteWorkout = async (id: string) => {
-  await prisma.workout.delete({
-    where: { id },
+  const res = await prisma.$transaction(async (prisma) => {
+    await prisma.workoutPlans.deleteMany({
+      where: { workoutId: id },
+    });
+
+    await prisma.workout.delete({
+      where: { id },
+    });
+
+    return { message: "Workout deleted successfully" };
   });
 
-  return { message: "Workout deleted successfully" };
+  return res;
 };
 
 export const WorkoutService = {

@@ -21,6 +21,8 @@ router
     NutritionController.createNutrition
   );
 
+router.route("/edamam").get(NutritionController.edamamData);
+
 router
   .route("/:id")
   .get(
@@ -37,9 +39,6 @@ router
     validateRequest(NutritiontValidation.NutritiontUpdateSchema),
     NutritionController.updateNutrition
   )
-  .delete(
-    auth(UserRole.ADMIN),
-    NutritionController.deleteNutrition
-  );
+  .delete(auth(UserRole.ADMIN), NutritionController.deleteNutrition);
 
 export const NutritionRoutes = router;

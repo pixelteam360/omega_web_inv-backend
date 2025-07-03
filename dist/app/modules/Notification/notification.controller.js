@@ -14,8 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotificationController = void 0;
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
+const pick_1 = __importDefault(require("../../../shared/pick"));
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
 const notification_service_1 = require("./notification.service");
+const user_costant_1 = require("./user.costant");
 const sendNotification = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield notification_service_1.NotificationService.sendNotification(req.body);
     (0, sendResponse_1.default)(res, {
@@ -23,6 +25,16 @@ const sendNotification = (0, catchAsync_1.default)((req, res) => __awaiter(void 
         data: result,
     });
 }));
+const getAllNotification = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const filters = (0, pick_1.default)(req.query, user_costant_1.notificationFilterableFields);
+    const options = (0, pick_1.default)(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = yield notification_service_1.NotificationService.getAllNotification(filters, options);
+    (0, sendResponse_1.default)(res, {
+        message: "Notifications retrieve successfully!",
+        data: result,
+    });
+}));
 exports.NotificationController = {
     sendNotification,
+    getAllNotification
 };

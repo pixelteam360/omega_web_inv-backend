@@ -101,6 +101,9 @@ const getSinglePurchasedPlan = async (id: string) => {
 const getMyPurchasedPlan = async (userId: string) => {
   const result = await prisma.purchasedPlan.findFirst({
     where: { userId, activePlan: true },
+    include: {
+      Plan: true,
+    },
   });
 
   if (!result) {

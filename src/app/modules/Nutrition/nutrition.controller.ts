@@ -34,7 +34,7 @@ const getSingleNutrition = catchAsync(async (req, res) => {
 });
 
 const updateNutrition = catchAsync(async (req, res) => {
-    const files = req.files as any;
+  const files = req.files as any;
 
   const iconFile =
     Array.isArray(files?.icon) && files.icon.length > 0
@@ -66,10 +66,19 @@ const deleteNutrition = catchAsync(async (req, res) => {
   });
 });
 
+const edamamData = catchAsync(async (req, res) => {
+  const result = await NutritionService.edamamData();
+  sendResponse(res, {
+    message: "Edamam data retrieved successfully",
+    data: result,
+  });
+});
+
 export const NutritionController = {
   createNutrition,
   getNutritions,
   getSingleNutrition,
   updateNutrition,
   deleteNutrition,
+  edamamData,
 };

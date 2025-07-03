@@ -9,11 +9,11 @@ const router = express.Router();
 
 router
   .route("/")
+  .get(auth(), NotificationController.getAllNotification)
   .post(
     auth(UserRole.ADMIN),
     validateRequest(NotificationValidation.NotificationSchema),
     NotificationController.sendNotification
   );
-
 
 export const NotificationRoutes = router;

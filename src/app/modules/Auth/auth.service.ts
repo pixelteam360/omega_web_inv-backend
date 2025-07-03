@@ -13,6 +13,12 @@ const loginUser = async (payload: { email: string; password: string }) => {
     where: {
       email: payload.email,
     },
+    select: {
+      id: true,
+      email: true,
+      password: true,
+      role: true,
+    },
   });
 
   if (!userData?.email) {
@@ -39,7 +45,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
     config.jwt.expires_in as string
   );
 
-  return { token: accessToken };
+  return { role: userData.role, token: accessToken };
 };
 
 const changePassword = async (

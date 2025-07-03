@@ -88,6 +88,9 @@ const getSinglePurchasedPlan = (id) => __awaiter(void 0, void 0, void 0, functio
 const getMyPurchasedPlan = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.purchasedPlan.findFirst({
         where: { userId, activePlan: true },
+        include: {
+            Plan: true,
+        },
     });
     if (!result) {
         throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "User have no subsceiption");

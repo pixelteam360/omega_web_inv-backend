@@ -62,14 +62,25 @@ const getSinglWorkoutPlans = (id) => __awaiter(void 0, void 0, void 0, function*
 const makeCompletedWorkoutPlans = (userId, WorkoutPlansId) => __awaiter(void 0, void 0, void 0, function* () {
     const WorkoutPlans = yield prisma_1.default.workoutPlans.findFirst({
         where: { id: WorkoutPlansId, userId },
-        include: { workout: true },
+        select: {
+            id: true,
+            isCompleted: true,
+            workout: {
+                select: {
+                    id: true,
+                    Kcal: true,
+                },
+            },
+        },
     });
     if (!WorkoutPlans) {
-        throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "Workout not found");
+        throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "Workout Plans not found");
     }
     const dailyGoal = yield prisma_1.default.dailyGoal.findFirst({
         where: { userId },
+        select: { id: true, CaloriesBurned: true },
     });
+    const totalBurned = (dailyGoal === null || dailyGoal === void 0 ? void 0 : dailyGoal.CaloriesBurned) + WorkoutPlans.workout.Kcal;
     const result = yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
         const updatePlan = yield prisma.workoutPlans.update({
             where: { id: WorkoutPlans.id },
@@ -77,7 +88,7 @@ const makeCompletedWorkoutPlans = (userId, WorkoutPlansId) => __awaiter(void 0, 
         });
         yield prisma.dailyGoal.update({
             where: { id: dailyGoal === null || dailyGoal === void 0 ? void 0 : dailyGoal.id },
-            data: { CaloriesBurned: WorkoutPlans.workout.Kcal },
+            data: { CaloriesBurned: totalBurned },
         });
         return updatePlan;
     }));

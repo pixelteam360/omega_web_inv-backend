@@ -139,10 +139,16 @@ const updateWorkout = (payload, id, thumbnailFile, iconFile, videoFile) => __awa
     return result;
 });
 const deleteWorkout = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    yield prisma_1.default.workout.delete({
-        where: { id },
-    });
-    return { message: "Workout deleted successfully" };
+    const res = yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
+        yield prisma.workoutPlans.deleteMany({
+            where: { workoutId: id },
+        });
+        yield prisma.workout.delete({
+            where: { id },
+        });
+        return { message: "Workout deleted successfully" };
+    }));
+    return res;
 });
 exports.WorkoutService = {
     createWorkoutIntoDb,

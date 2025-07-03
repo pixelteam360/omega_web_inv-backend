@@ -49,6 +49,12 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         where: {
             email: payload.email,
         },
+        select: {
+            id: true,
+            email: true,
+            password: true,
+            role: true,
+        },
     });
     if (!(userData === null || userData === void 0 ? void 0 : userData.email)) {
         throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "User not found! with this email " + payload.email);
@@ -62,7 +68,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         email: userData.email,
         role: userData.role,
     }, config_1.default.jwt.jwt_secret, config_1.default.jwt.expires_in);
-    return { token: accessToken };
+    return { role: userData.role, token: accessToken };
 });
 const changePassword = (userToken, newPassword, oldPassword) => __awaiter(void 0, void 0, void 0, function* () {
     const decodedToken = jwtHelpers_1.jwtHelpers.verifyToken(userToken, config_1.default.jwt.jwt_secret);
