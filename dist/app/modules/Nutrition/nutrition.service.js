@@ -30,6 +30,8 @@ const paginationHelper_1 = require("../../../helpars/paginationHelper");
 const fileUploader_1 = require("../../../helpars/fileUploader");
 const http_status_1 = __importDefault(require("http-status"));
 const nutrition_costant_1 = require("./nutrition.costant");
+const axios_1 = __importDefault(require("axios"));
+const config_1 = __importDefault(require("../../../config"));
 const createNutritionIntoDb = (payload, files) => __awaiter(void 0, void 0, void 0, function* () {
     const iconFile = files.find((file) => file.fieldname === "icon");
     const nutritionFile = files.find((file) => file.fieldname === "nutritionTips");
@@ -183,10 +185,46 @@ const deleteNutrition = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }));
     return result;
 });
+const edamamData = () => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    const items = [
+        "rice",
+        "chicken",
+        "cheese",
+        "egg",
+        "bread",
+        "beef",
+        "milk",
+        "pasta",
+        "banana",
+        "spinach",
+    ];
+    try {
+        const res = yield axios_1.default.get("https://api.edamam.com/api/food-database/v2/parser", {
+            params: {
+                app_id: config_1.default.edamam.app_id,
+                app_key: config_1.default.edamam.app_key,
+                ingr: items.join(","),
+            },
+        });
+        // const food = res.data.hints.find(
+        //   (item) => item.food.foodId === "food_a9al1uoaczd7p8bv3g9vebl5erqx"
+        // );
+        // if (!food) {
+        //   throw new ApiError(httpStatus.NOT_FOUND, "Food not found");
+        // }
+        return res.data.hints;
+    }
+    catch (error) {
+        console.error(((_a = error.response) === null || _a === void 0 ? void 0 : _a.data) || error.message);
+        throw new Error("Failed to fetch food data");
+    }
+});
 exports.NutritionService = {
     createNutritionIntoDb,
     getNutritionsFromDb,
     getSingleNutrition,
+    edamamData,
     updateNutrition,
     deleteNutrition,
 };

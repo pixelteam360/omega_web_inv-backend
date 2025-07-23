@@ -31,6 +31,16 @@ const fileUploader_1 = require("../../../helpars/fileUploader");
 const post_costant_1 = require("./post.costant");
 const http_status_1 = __importDefault(require("http-status"));
 const createPostIntoDb = (payload, userId, imageFile, videoFile) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield prisma_1.default.user.findUnique({
+        where: { id: userId },
+        select: {
+            id: true,
+            activePlan: true,
+        },
+    });
+    if ((user === null || user === void 0 ? void 0 : user.activePlan) === false) {
+        throw new ApiErrors_1.default(http_status_1.default.FORBIDDEN, "You are not allowed to create posts. Please activate your plan.");
+    }
     let video = "";
     if (videoFile) {
         video = (yield fileUploader_1.fileUploader.uploadToDigitalOcean(videoFile)).Location;
@@ -172,6 +182,16 @@ const getSinglePost = (id) => __awaiter(void 0, void 0, void 0, function* () {
     return reshapedPost;
 });
 const giveLikeToPost = (postId, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield prisma_1.default.user.findUnique({
+        where: { id: userId },
+        select: {
+            id: true,
+            activePlan: true,
+        },
+    });
+    if ((user === null || user === void 0 ? void 0 : user.activePlan) === false) {
+        throw new ApiErrors_1.default(http_status_1.default.FORBIDDEN, "You are not allowed to like the posts. Please activate your plan.");
+    }
     const post = yield prisma_1.default.post.findFirst({
         where: { id: postId },
     });
@@ -204,6 +224,16 @@ const myLikedPost = (postId, userId) => __awaiter(void 0, void 0, void 0, functi
     return result;
 });
 const commentAPost = (payload, postId, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield prisma_1.default.user.findUnique({
+        where: { id: userId },
+        select: {
+            id: true,
+            activePlan: true,
+        },
+    });
+    if ((user === null || user === void 0 ? void 0 : user.activePlan) === false) {
+        throw new ApiErrors_1.default(http_status_1.default.FORBIDDEN, "You are not allowed to comment the posts. Please activate your plan.");
+    }
     const post = yield prisma_1.default.post.findFirst({
         where: { id: postId },
     });

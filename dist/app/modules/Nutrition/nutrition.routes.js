@@ -19,6 +19,7 @@ router
     req.body = JSON.parse(req.body.data);
     next();
 }, nutrition_controller_1.NutritionController.createNutrition);
+router.route("/edamam").get(nutrition_controller_1.NutritionController.edamamData);
 router
     .route("/:id")
     .get((0, auth_1.default)(client_1.UserRole.ADMIN, client_1.UserRole.USER), nutrition_controller_1.NutritionController.getSingleNutrition)

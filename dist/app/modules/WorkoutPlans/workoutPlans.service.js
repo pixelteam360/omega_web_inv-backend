@@ -27,7 +27,17 @@ const creatWorkoutPlansIntoDb = (payload, userId) => __awaiter(void 0, void 0, v
         where: { userId, workoutId: workout.id, isCompleted: false },
     });
     if (workoutPlan) {
-        throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You have already added this workout");
+        throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You have already added this meal plan. You need to complete this first");
+    }
+    const user = yield prisma_1.default.user.findUnique({
+        where: { id: userId },
+        select: { id: true, activePlan: true },
+    });
+    const workoutPlansCount = yield prisma_1.default.workoutPlans.count({
+        where: { userId },
+    });
+    if (workoutPlansCount >= 5 && (user === null || user === void 0 ? void 0 : user.activePlan) === false) {
+        throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You can only add up to 5 workout in free plan");
     }
     const result = yield prisma_1.default.workoutPlans.create({
         data: Object.assign(Object.assign({}, payload), { userId }),

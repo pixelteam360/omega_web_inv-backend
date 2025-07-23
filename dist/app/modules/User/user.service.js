@@ -176,6 +176,12 @@ const getUsersFromDb = (params, options) => __awaiter(void 0, void 0, void 0, fu
     const total = yield prisma_1.default.user.count({
         where: whereConditons,
     });
+    const paid = yield prisma_1.default.user.count({
+        where: Object.assign(Object.assign({}, whereConditons), { activePlan: true }),
+    });
+    const unPaid = yield prisma_1.default.user.count({
+        where: Object.assign(Object.assign({}, whereConditons), { activePlan: false }),
+    });
     if (!result || result.length === 0) {
         throw new ApiErrors_1.default(404, "No active users found");
     }
@@ -184,6 +190,8 @@ const getUsersFromDb = (params, options) => __awaiter(void 0, void 0, void 0, fu
             page,
             limit,
             total,
+            paid,
+            unPaid,
         },
         data: result,
     };

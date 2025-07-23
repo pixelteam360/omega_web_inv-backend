@@ -166,6 +166,12 @@ const getUsersFromDb = async (
   const total = await prisma.user.count({
     where: whereConditons,
   });
+  const paid = await prisma.user.count({
+    where: { ...whereConditons, activePlan: true },
+  });
+  const unPaid = await prisma.user.count({
+    where: { ...whereConditons, activePlan: false },
+  });
 
   if (!result || result.length === 0) {
     throw new ApiError(404, "No active users found");
@@ -175,6 +181,8 @@ const getUsersFromDb = async (
       page,
       limit,
       total,
+      paid,
+      unPaid,
     },
     data: result,
   };

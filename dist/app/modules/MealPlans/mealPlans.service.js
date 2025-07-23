@@ -29,6 +29,16 @@ const creatMealPlansIntoDb = (payload, userId) => __awaiter(void 0, void 0, void
     if (workoutPlan) {
         throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You have already added this meal plan. You need to complete this first");
     }
+    const user = yield prisma_1.default.user.findUnique({
+        where: { id: userId },
+        select: { id: true, activePlan: true },
+    });
+    const mealPlansCount = yield prisma_1.default.mealPlans.count({
+        where: { userId },
+    });
+    if (mealPlansCount >= 5 && (user === null || user === void 0 ? void 0 : user.activePlan) === false) {
+        throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You can only add up to 5 meal in free plan");
+    }
     const result = yield prisma_1.default.mealPlans.create({
         data: Object.assign(Object.assign({}, payload), { userId }),
     });

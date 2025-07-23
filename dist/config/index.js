@@ -24,4 +24,8 @@ exports.default = {
         email: process.env.EMAIL,
         app_pass: process.env.APP_PASS
     },
+    edamam: {
+        app_id: process.env.EDAMAM_APP_ID,
+        app_key: process.env.EDAMAM_APP_KEY
+    }
 };
