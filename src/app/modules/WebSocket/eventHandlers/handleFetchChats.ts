@@ -4,14 +4,17 @@ import { ExtendedWebSocket } from "../types";
 const onlineUsers = new Set<string>();
 
 export async function handleFetchChats(ws: ExtendedWebSocket, data: any) {
-  const { receiverId } = data;
+  const { receiverId, type } = data;
   if (!ws.userId) {
     console.log("User not authenticated");
     return;
   }
 
+  const roomType = type ? type : "ALL";
+
   const room = await prisma.room.findFirst({
     where: {
+      roomType,
       OR: [
         { senderId: ws.userId, receiverId },
         { senderId: receiverId, receiverId: ws.userId },

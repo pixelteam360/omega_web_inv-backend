@@ -8,7 +8,16 @@ export async function handleMessageList(ws: ExtendedWebSocket) {
     // Fetch all rooms where the user is involved
     const rooms = await prisma.room.findMany({
       where: {
-        OR: [{ senderId: ws.userId }, { receiverId: ws.userId }],
+        AND: [
+          {
+            OR: [{ senderId: ws.userId }, { receiverId: ws.userId }],
+          },
+          {
+            roomType: {
+              notIn: ["NUTRITION", "TRAINER"],
+            },
+          },
+        ],
       },
       include: {
         chat: {
