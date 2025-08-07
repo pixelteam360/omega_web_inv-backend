@@ -1,7 +1,6 @@
 import prisma from "../../../../shared/prisma";
 import { ExtendedWebSocket } from "../types";
-
-const userSockets = new Map<string, ExtendedWebSocket>();
+import { userSockets } from "./authenticate";
 
 export async function messageToNutritionist(ws: ExtendedWebSocket, data: any) {
   const { message, images } = data;

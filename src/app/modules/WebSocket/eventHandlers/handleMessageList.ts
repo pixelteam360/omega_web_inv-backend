@@ -5,7 +5,6 @@ const onlineUsers = new Set<string>();
 
 export async function handleMessageList(ws: ExtendedWebSocket) {
   try {
-    // Fetch all rooms where the user is involved
     const rooms = await prisma.room.findMany({
       where: {
         AND: [
@@ -24,17 +23,15 @@ export async function handleMessageList(ws: ExtendedWebSocket) {
           orderBy: {
             createdAt: "desc",
           },
-          take: 1, // Fetch only the latest message for each room
+          take: 1,
         },
       },
     });
 
-    // Extract the relevant user IDs from the rooms
     const userIds = rooms.map((room) => {
       return room.senderId === ws.userId ? room.receiverId : room.senderId;
     });
 
-    // Fetch user for the corresponding user IDs
     const userInfos = await prisma.user.findMany({
       where: {
         id: {
@@ -47,7 +44,6 @@ export async function handleMessageList(ws: ExtendedWebSocket) {
       },
     });
 
-    // Combine user info with their last message
     const userWithLastMessages = rooms.map((room) => {
       const otherprofileId =
         room.senderId === ws.userId ? room.receiverId : room.senderId;
@@ -62,8 +58,7 @@ export async function handleMessageList(ws: ExtendedWebSocket) {
         onlineUsers: onlineUsers.has(userInfo?.id as string),
       };
     });
-
-    // Send the result back to the requesting client
+  
     ws.send(
       JSON.stringify({
         event: "messageList",

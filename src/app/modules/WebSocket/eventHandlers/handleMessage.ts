@@ -1,7 +1,6 @@
 import prisma from "../../../../shared/prisma";
 import { ExtendedWebSocket } from "../types";
-
-const userSockets = new Map<string, ExtendedWebSocket>();
+import { userSockets } from "./authenticate";
 
 export async function handleMessage(ws: ExtendedWebSocket, data: any) {
   const { receiverId, message, images } = data;
