@@ -3,7 +3,7 @@ import { ExtendedWebSocket } from "../types";
 import { userSockets } from "./authenticate";
 
 export async function handleMessage(ws: ExtendedWebSocket, data: any) {
-  const { receiverId, message, images } = data;
+  const { receiverId, message, images, type } = data;
 
   const receiver = await prisma.user.findFirst({
     where: { id: receiverId },
@@ -20,8 +20,11 @@ export async function handleMessage(ws: ExtendedWebSocket, data: any) {
     return;
   }
 
+  const roomType = "ALL";
+
   let room = await prisma.room.findFirst({
     where: {
+      roomType: type ? type : roomType,
       OR: [
         { senderId: ws.userId, receiverId },
         { senderId: receiverId, receiverId: ws.userId },
@@ -31,7 +34,11 @@ export async function handleMessage(ws: ExtendedWebSocket, data: any) {
 
   if (!room) {
     room = await prisma.room.create({
-      data: { senderId: ws.userId, receiverId },
+      data: {
+        senderId: ws.userId,
+        receiverId,
+        roomType: type ? type : roomType,
+      },
     });
   }
 
