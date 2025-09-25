@@ -20,7 +20,7 @@ const getNutritions = catchAsync(async (req, res) => {
   const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
   const result = await NutritionService.getNutritionsFromDb(filters, options);
   sendResponse(res, {
-    message: "Nutritions retrieve successfully!",
+    message: "Nutrition retrieved successfully!",
     data: result,
   });
 });

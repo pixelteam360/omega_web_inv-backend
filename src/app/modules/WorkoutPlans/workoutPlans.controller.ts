@@ -8,7 +8,7 @@ const createWorkoutPlans = catchAsync(async (req, res) => {
     req.user.id
   );
   sendResponse(res, {
-    message: "WorkoutPlans created successfully!",
+    message: "Workout Plan created successfully!",
     data: result,
   });
 });
@@ -24,7 +24,7 @@ const myWorkoutPlans = catchAsync(async (req, res) => {
 const getSinglWorkoutPlans = catchAsync(async (req, res) => {
   const result = await WorkoutPlansService.getSinglWorkoutPlans(req.params.id);
   sendResponse(res, {
-    message: "WorkoutPlans retrieved successfully",
+    message: "Workout Plans retrieved successfully",
     data: result,
   });
 });
@@ -35,7 +35,7 @@ const makeCompletedWorkoutPlans = catchAsync(async (req, res) => {
     req.params.id
   );
   sendResponse(res, {
-    message: "WorkoutPlans updated successfully!",
+    message: "Workout Plan updated successfully!",
     data: result,
   });
 });

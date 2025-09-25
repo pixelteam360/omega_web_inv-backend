@@ -21,6 +21,7 @@ model User {
   expirationOtp    DateTime?
   otp              Int?
   role             UserRole          @default(USER)
+  profileCompleted Boolean @default(false)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   userInfo         UserInfo?

@@ -133,7 +133,7 @@ export const deletWorkoutPlans = async () => {
     });
   });
 
-  return { message: "All WorkoutPlans deleted successfully" };
+  return { message: "All Workout Plans deleted successfully" };
 };
 
 export const WorkoutPlansService = {

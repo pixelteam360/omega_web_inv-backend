@@ -8,7 +8,7 @@ const createMealPlans = catchAsync(async (req, res) => {
     req.user.id
   );
   sendResponse(res, {
-    message: "MealPlans created successfully!",
+    message: "Meal Plan created successfully!",
     data: result,
   });
 });
@@ -16,7 +16,7 @@ const createMealPlans = catchAsync(async (req, res) => {
 const myMealPlans = catchAsync(async (req, res) => {
   const result = await MealPlansService.myMealPlans(req.user.id);
   sendResponse(res, {
-    message: "MealPlanss retrieve successfully!",
+    message: "Meal Plans retrieved successfully!",
     data: result,
   });
 });
@@ -24,7 +24,7 @@ const myMealPlans = catchAsync(async (req, res) => {
 const getSinglMealPlans = catchAsync(async (req, res) => {
   const result = await MealPlansService.getSinglMealPlans(req.params.id);
   sendResponse(res, {
-    message: "MealPlans retrieved successfully",
+    message: "Meal Plan retrieved successfully",
     data: result,
   });
 });
@@ -35,7 +35,7 @@ const makeCompletedMealPlans = catchAsync(async (req, res) => {
     req.params.id
   );
   sendResponse(res, {
-    message: "MealPlans updated successfully!",
+    message: "Meal Plan updated successfully!",
     data: result,
   });
 });

@@ -203,6 +203,7 @@ const getMyProfile = async (userEmail: string) => {
       dailyGoal: true,
       bodyMeasurement: true,
       varifiedEmail: true,
+      profileCompleted: true,
     },
   });
 

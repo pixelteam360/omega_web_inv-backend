@@ -17,7 +17,7 @@ const createUserInfoIntoDb = async (
   if (userInfo) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
-      "You have already submited you info"
+      "You have already submitted you info"
     );
   }
 
@@ -26,16 +26,25 @@ const createUserInfoIntoDb = async (
     image = (await fileUploader.uploadToDigitalOcean(imageFile)).Location;
   }
 
-  const result = await prisma.userInfo.create({
-    data: { ...payload, userId, image },
+  const res = await prisma.$transaction(async (prisma) => {
+    const result = await prisma.userInfo.create({
+      data: { ...payload, userId, image },
+    });
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { profileCompleted: true },
+    });
+
+    return result;
   });
 
-  return result;
+  return res;
 };
 
 const getMyUserInfo = async (id: string) => {
   const result = await prisma.userInfo.findFirst({
-    where: { userId: id }
+    where: { userId: id },
   });
 
   if (!result) {
@@ -45,7 +54,7 @@ const getMyUserInfo = async (id: string) => {
   return result;
 };
 
-const updateUserInfo = async ( 
+const updateUserInfo = async (
   payload: UserInfo,
   imageFile: any,
   userId: string
