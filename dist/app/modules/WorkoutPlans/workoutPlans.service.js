@@ -111,7 +111,7 @@ const deletWorkoutPlans = () => __awaiter(void 0, void 0, void 0, function* () {
             data: { CaloriesBurned: 0, CaloriesConsumed: 0 },
         });
     }));
-    return { message: "All WorkoutPlans deleted successfully" };
+    return { message: "All Workout Plans deleted successfully" };
 });
 exports.deletWorkoutPlans = deletWorkoutPlans;
 exports.WorkoutPlansService = {

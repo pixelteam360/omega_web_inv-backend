@@ -19,7 +19,7 @@ const workoutPlans_service_1 = require("./workoutPlans.service");
 const createWorkoutPlans = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield workoutPlans_service_1.WorkoutPlansService.creatWorkoutPlansIntoDb(req.body, req.user.id);
     (0, sendResponse_1.default)(res, {
-        message: "WorkoutPlans created successfully!",
+        message: "Workout Plan created successfully!",
         data: result,
     });
 }));
@@ -33,14 +33,14 @@ const myWorkoutPlans = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
 const getSinglWorkoutPlans = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield workoutPlans_service_1.WorkoutPlansService.getSinglWorkoutPlans(req.params.id);
     (0, sendResponse_1.default)(res, {
-        message: "WorkoutPlans retrieved successfully",
+        message: "Workout Plans retrieved successfully",
         data: result,
     });
 }));
 const makeCompletedWorkoutPlans = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield workoutPlans_service_1.WorkoutPlansService.makeCompletedWorkoutPlans(req.user.id, req.params.id);
     (0, sendResponse_1.default)(res, {
-        message: "WorkoutPlans updated successfully!",
+        message: "Workout Plan updated successfully!",
         data: result,
     });
 }));

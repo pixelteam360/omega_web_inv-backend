@@ -11,12 +11,12 @@ export const emailSender = async (
       port: 2525,
       secure: false, 
       auth: {
-        user: "88af50003@smtp-brevo.com", 
-        pass: "8bpBA0zPsrY473IZ", 
+        user: "957d42001@smtp-brevo.com", 
+        pass: "dL2PIRtxMbacsUCj", 
       },
     });
     const mailOptions = {
-      from: `<smt.team.pixel@gmail.com>`, 
+      from: `<homerd@alphapulsefit.com>`, 
       to, 
       subject, 
       text: html.replace(/<[^>]+>/g, ""),

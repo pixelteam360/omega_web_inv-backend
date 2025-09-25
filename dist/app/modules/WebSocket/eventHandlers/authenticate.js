@@ -12,13 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.userSockets = void 0;
 exports.handleAuthenticate = handleAuthenticate;
 const config_1 = __importDefault(require("../../../../config"));
 const jwtHelpers_1 = require("../../../../helpars/jwtHelpers");
 const prisma_1 = __importDefault(require("../../../../shared/prisma"));
 const utils_1 = require("../utils");
 const onlineUsers = new Set();
-const userSockets = new Map();
+exports.userSockets = new Map();
 function handleAuthenticate(ws, data, wss) {
     return __awaiter(this, void 0, void 0, function* () {
         const token = data.token;
@@ -32,7 +33,7 @@ function handleAuthenticate(ws, data, wss) {
             return ws.close();
         ws.userId = user.id;
         onlineUsers.add(user.id);
-        userSockets.set(user.id, ws);
+        exports.userSockets.set(user.id, ws);
         (0, utils_1.broadcastToAll)(wss, {
             event: "userStatus",
             data: { userId: user.id, isOnline: true },

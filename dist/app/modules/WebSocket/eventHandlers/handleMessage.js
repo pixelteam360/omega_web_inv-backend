@@ -14,10 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleMessage = handleMessage;
 const prisma_1 = __importDefault(require("../../../../shared/prisma"));
-const userSockets = new Map();
+const authenticate_1 = require("./authenticate");
 function handleMessage(ws, data) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { receiverId, message, images } = data;
+        const { receiverId, message, images, type } = data;
         const receiver = yield prisma_1.default.user.findFirst({
             where: { id: receiverId },
             select: { id: true, role: true },
@@ -30,8 +30,10 @@ function handleMessage(ws, data) {
             console.log("Invalid message payload");
             return;
         }
+        const roomType = "ALL";
         let room = yield prisma_1.default.room.findFirst({
             where: {
+                roomType: type ? type : roomType,
                 OR: [
                     { senderId: ws.userId, receiverId },
                     { senderId: receiverId, receiverId: ws.userId },
@@ -40,7 +42,11 @@ function handleMessage(ws, data) {
         });
         if (!room) {
             room = yield prisma_1.default.room.create({
-                data: { senderId: ws.userId, receiverId },
+                data: {
+                    senderId: ws.userId,
+                    receiverId,
+                    roomType: type ? type : roomType,
+                },
             });
         }
         const chat = yield prisma_1.default.chat.create({
@@ -52,7 +58,7 @@ function handleMessage(ws, data) {
                 images: images || "",
             },
         });
-        const receiverSocket = userSockets.get(receiverId);
+        const receiverSocket = authenticate_1.userSockets.get(receiverId);
         if (receiverSocket) {
             receiverSocket.send(JSON.stringify({ event: "message", data: chat }));
         }

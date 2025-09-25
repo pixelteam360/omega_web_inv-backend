@@ -18,25 +18,31 @@ const onlineUsers = new Set();
 function handleMessageList(ws) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            // Fetch all rooms where the user is involved
             const rooms = yield prisma_1.default.room.findMany({
                 where: {
-                    OR: [{ senderId: ws.userId }, { receiverId: ws.userId }],
+                    AND: [
+                        {
+                            OR: [{ senderId: ws.userId }, { receiverId: ws.userId }],
+                        },
+                        {
+                            roomType: {
+                                notIn: ["NUTRITION", "TRAINER"],
+                            },
+                        },
+                    ],
                 },
                 include: {
                     chat: {
                         orderBy: {
                             createdAt: "desc",
                         },
-                        take: 1, // Fetch only the latest message for each room
+                        take: 1,
                     },
                 },
             });
-            // Extract the relevant user IDs from the rooms
             const userIds = rooms.map((room) => {
                 return room.senderId === ws.userId ? room.receiverId : room.senderId;
             });
-            // Fetch user for the corresponding user IDs
             const userInfos = yield prisma_1.default.user.findMany({
                 where: {
                     id: {
@@ -48,7 +54,6 @@ function handleMessageList(ws) {
                     userInfo: { select: { fullName: true, image: true } },
                 },
             });
-            // Combine user info with their last message
             const userWithLastMessages = rooms.map((room) => {
                 const otherprofileId = room.senderId === ws.userId ? room.receiverId : room.senderId;
                 const userInfo = userInfos.find((userInfo) => userInfo.id === otherprofileId);
@@ -58,7 +63,6 @@ function handleMessageList(ws) {
                     onlineUsers: onlineUsers.has(userInfo === null || userInfo === void 0 ? void 0 : userInfo.id),
                 };
             });
-            // Send the result back to the requesting client
             ws.send(JSON.stringify({
                 event: "messageList",
                 data: userWithLastMessages,

@@ -212,6 +212,7 @@ const getMyProfile = (userEmail) => __awaiter(void 0, void 0, void 0, function* 
             dailyGoal: true,
             bodyMeasurement: true,
             varifiedEmail: true,
+            profileCompleted: true,
         },
     });
     const [totalWorkout, completedWorkout, totalMeals, completedMeals] = yield Promise.all([

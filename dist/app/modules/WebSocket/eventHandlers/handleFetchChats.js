@@ -17,13 +17,15 @@ const prisma_1 = __importDefault(require("../../../../shared/prisma"));
 const onlineUsers = new Set();
 function handleFetchChats(ws, data) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { receiverId } = data;
+        const { receiverId, type } = data;
         if (!ws.userId) {
             console.log("User not authenticated");
             return;
         }
+        const roomType = type ? type : "ALL";
         const room = yield prisma_1.default.room.findFirst({
             where: {
+                roomType,
                 OR: [
                     { senderId: ws.userId, receiverId },
                     { senderId: receiverId, receiverId: ws.userId },

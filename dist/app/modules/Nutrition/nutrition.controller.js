@@ -30,7 +30,7 @@ const getNutritions = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     const options = (0, pick_1.default)(req.query, ["limit", "page", "sortBy", "sortOrder"]);
     const result = yield nutrition_service_1.NutritionService.getNutritionsFromDb(filters, options);
     (0, sendResponse_1.default)(res, {
-        message: "Nutritions retrieve successfully!",
+        message: "Nutrition retrieved successfully!",
         data: result,
     });
 }));

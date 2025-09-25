@@ -22,20 +22,27 @@ const createUserInfoIntoDb = (payload, userId, imageFile) => __awaiter(void 0, v
         where: { userId },
     });
     if (userInfo) {
-        throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You have already submited you info");
+        throw new ApiErrors_1.default(http_status_1.default.BAD_REQUEST, "You have already submitted you info");
     }
     let image = "";
     if (imageFile) {
         image = (yield fileUploader_1.fileUploader.uploadToDigitalOcean(imageFile)).Location;
     }
-    const result = yield prisma_1.default.userInfo.create({
-        data: Object.assign(Object.assign({}, payload), { userId, image }),
-    });
-    return result;
+    const res = yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
+        const result = yield prisma.userInfo.create({
+            data: Object.assign(Object.assign({}, payload), { userId, image }),
+        });
+        yield prisma.user.update({
+            where: { id: userId },
+            data: { profileCompleted: true },
+        });
+        return result;
+    }));
+    return res;
 });
 const getMyUserInfo = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.userInfo.findFirst({
-        where: { userId: id }
+        where: { userId: id },
     });
     if (!result) {
         throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "User info not available");

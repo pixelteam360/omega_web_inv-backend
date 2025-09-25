@@ -19,28 +19,28 @@ const mealPlans_service_1 = require("./mealPlans.service");
 const createMealPlans = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield mealPlans_service_1.MealPlansService.creatMealPlansIntoDb(req.body, req.user.id);
     (0, sendResponse_1.default)(res, {
-        message: "MealPlans created successfully!",
+        message: "Meal Plan created successfully!",
         data: result,
     });
 }));
 const myMealPlans = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield mealPlans_service_1.MealPlansService.myMealPlans(req.user.id);
     (0, sendResponse_1.default)(res, {
-        message: "MealPlanss retrieve successfully!",
+        message: "Meal Plans retrieved successfully!",
         data: result,
     });
 }));
 const getSinglMealPlans = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield mealPlans_service_1.MealPlansService.getSinglMealPlans(req.params.id);
     (0, sendResponse_1.default)(res, {
-        message: "MealPlans retrieved successfully",
+        message: "Meal Plan retrieved successfully",
         data: result,
     });
 }));
 const makeCompletedMealPlans = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield mealPlans_service_1.MealPlansService.makeCompletedMealPlans(req.user.id, req.params.id);
     (0, sendResponse_1.default)(res, {
-        message: "MealPlans updated successfully!",
+        message: "Meal Plan updated successfully!",
         data: result,
     });
 }));
