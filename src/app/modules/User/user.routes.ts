@@ -20,6 +20,9 @@ router.get("/weightProgress", auth(), userController.myWeightProgress);
 router
   .route("/profile")
   .get(auth(UserRole.ADMIN, UserRole.USER), userController.getMyProfile)
-  .put(auth(UserRole.ADMIN, UserRole.USER), userController.updateProfile);
+  .put(auth(UserRole.ADMIN, UserRole.USER), userController.updateProfile)
+  .delete(auth(), userController.deleteUserWithRelations);
+
+router.route("/:id").patch(auth(UserRole.ADMIN), userController.blockUser);
 
 export const UserRoutes = router;

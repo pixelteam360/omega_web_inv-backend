@@ -10,6 +10,7 @@ import { IUserFilterRequest, TUser } from "./user.interface";
 import crypto from "crypto";
 import { emailSender } from "../../../shared/emailSender";
 import { createPurchasedPlanIntoDb } from "../PurchasedPlan/purchasedPlan.service";
+import httpStatus from "http-status";
 
 const createUserIntoDb = async (payload: TUser) => {
   const existingUser = await prisma.user.findFirst({
@@ -38,7 +39,7 @@ const createUserIntoDb = async (payload: TUser) => {
                 <span style="color: #ffeb3b;">Verity Email OTP</span>
             </h2>
             <p style="font-size: 16px; color: #333; line-height: 1.5; text-align: center;">
-                Email varification OTP code is below.
+                Email verification OTP code is below.
             </p>
             <p style="font-size: 32px; font-weight: bold; color: #FB4958; text-align: center; margin: 20px 0;">
                 ${otp}
@@ -160,6 +161,8 @@ const getUsersFromDb = async (
     select: {
       id: true,
       activePlan: true,
+      email: true,
+      isDeleted: true,
       userInfo: { select: { fullName: true, image: true } },
     },
   });
@@ -270,10 +273,97 @@ const myWeightProgress = async (userId: string) => {
   return result;
 };
 
+const blockUser = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, isDeleted: true },
+  });
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { isDeleted: !user.isDeleted },
+  });
+
+  return { message: "User status updated successfully" };
+};
+
+const deleteUserWithRelations = async (userId: string) => {
+  // Find the user first
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  const result = await prisma.$transaction(async (prisma) => {
+    // Delete UserInfo
+    await prisma.userInfo.deleteMany({ where: { userId } });
+
+    // Delete BodyMeasurements
+    await prisma.bodyMeasurement.deleteMany({ where: { userId } });
+
+    // Delete WeightProgress
+    await prisma.weightProgress.deleteMany({ where: { userId } });
+
+    // Delete WorkoutPlans
+    await prisma.workoutPlans.deleteMany({ where: { userId } });
+
+    // Delete MealPlans
+    await prisma.mealPlans.deleteMany({ where: { userId } });
+
+    // Delete DailyGoal
+    await prisma.dailyGoal.deleteMany({ where: { userId } });
+
+    // Delete Posts and related likes/comments
+    const posts = await prisma.post.findMany({ where: { userId } });
+    for (const post of posts) {
+      await prisma.postLike.deleteMany({ where: { postId: post.id } });
+      await prisma.postComment.deleteMany({ where: { postId: post.id } });
+    }
+    await prisma.post.deleteMany({ where: { userId } });
+
+    // Delete PurchasedPlans
+    await prisma.purchasedPlan.deleteMany({ where: { userId } });
+
+    // Delete Rooms where user is sender or receiver
+    const rooms = await prisma.room.findMany({
+      where: {
+        OR: [{ senderId: userId }, { receiverId: userId }],
+      },
+    });
+
+    for (const room of rooms) {
+      // Delete chats in the room
+      await prisma.chat.deleteMany({ where: { roomId: room.id } });
+    }
+    // Delete the rooms
+    await prisma.room.deleteMany({
+      where: {
+        OR: [{ senderId: userId }, { receiverId: userId }],
+      },
+    });
+
+    // Finally, delete the User
+    await prisma.user.delete({ where: { id: userId } });
+
+    return { message: "User and all related data deleted successfully" };
+  });
+
+  return result;
+};
+
 export const userService = {
   createUserIntoDb,
   getUsersFromDb,
   getMyProfile,
   updateProfile,
   myWeightProgress,
+  blockUser,
+  deleteUserWithRelations,
 };

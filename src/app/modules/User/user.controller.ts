@@ -48,10 +48,28 @@ const myWeightProgress = catchAsync(async (req, res) => {
   });
 });
 
+const blockUser = catchAsync(async (req, res) => {
+  const result = await userService.blockUser(req.params.id);
+  sendResponse(res, {
+    message: "User status updated successfully!",
+    data: result,
+  });
+});
+
+const deleteUserWithRelations = catchAsync(async (req, res) => {
+  const result = await userService.deleteUserWithRelations(req.user.id);
+  sendResponse(res, {
+    message: "User and all related data deleted successfully",
+    data: result,
+  });
+});
+
 export const userController = {
   createUser,
   getUsers,
   getMyProfile,
   updateProfile,
-  myWeightProgress
+  myWeightProgress,
+  blockUser,
+  deleteUserWithRelations
 };
