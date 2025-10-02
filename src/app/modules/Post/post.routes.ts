@@ -5,6 +5,7 @@ import auth from "../../middlewares/auth";
 import { fileUploader } from "../../../helpars/fileUploader";
 import { PostController } from "./post.controller";
 import { UserRole } from "@prisma/client";
+import { userController } from "../User/user.controller";
 
 const router = express.Router();
 
@@ -25,6 +26,15 @@ router
 router
   .route("/my")
   .get(auth(UserRole.USER, UserRole.ADMIN), PostController.getMyPosts);
+
+router
+  .route("/report")
+  .post(
+    auth(),
+    validateRequest(PostValidation.ReportPostSchema),
+    PostController.reportPost
+  )
+  .get(PostController.allReports);
 
 router
   .route("/:id")

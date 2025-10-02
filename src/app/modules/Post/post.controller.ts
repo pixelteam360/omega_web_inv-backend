@@ -2,7 +2,7 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { PostService } from "./post.service";
 import pick from "../../../shared/pick";
-import { postFilterableFields } from "./post.costant";
+import { postFilterableFields, reportFilterableFields } from "./post.costant";
 
 const createPost = catchAsync(async (req, res) => {
   const { images, video } = req.files as any;
@@ -86,6 +86,24 @@ const deletePost = catchAsync(async (req, res) => {
   });
 });
 
+const reportPost = catchAsync(async (req, res) => {
+  const result = await PostService.reportPost(req.body, req.user.id);
+  sendResponse(res, {
+    message: "Post reported successfully",
+    data: result,
+  });
+});
+
+const allReports = catchAsync(async (req, res) => {
+  const filters = pick(req.query, reportFilterableFields);
+  const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+  const result = await PostService.allReports(filters, options);
+  sendResponse(res, {
+    message: "Post retrieved successfully",
+    data: result,
+  });
+});
+
 export const PostController = {
   createPost,
   getPosts,
@@ -94,5 +112,7 @@ export const PostController = {
   myLikedPost,
   commentAPost,
   getMyPosts,
-  deletePost
+  deletePost,
+  reportPost,
+  allReports,
 };

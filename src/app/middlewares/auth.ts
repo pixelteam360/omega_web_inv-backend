@@ -31,9 +31,18 @@ const auth = (...roles: string[]) => {
         where: {
           id: id,
         },
+        select: { id: true, isDeleted: true },
       });
+
       if (!user) {
         throw new ApiError(httpStatus.NOT_FOUND, "User not found!");
+      }
+
+      if (user.isDeleted === true) {
+        throw new ApiError(
+          httpStatus.UNAUTHORIZED,
+          "This account has suspended"
+        );
       }
 
       req.user = verifiedUser as JwtPayload;

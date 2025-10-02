@@ -16,3 +16,9 @@ export type IPostFilterRequest = {
   contactNumber?: string | undefined;
   searchTerm?: string | undefined;
 };
+
+export type IReportFilterRequest = {
+  description?: string | undefined;
+  contactNumber?: string | undefined;
+  searchTerm?: string | undefined;
+};

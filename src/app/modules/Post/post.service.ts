@@ -4,8 +4,8 @@ import { IPaginationOptions } from "../../../interfaces/paginations";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 import { Prisma, Post } from "@prisma/client";
 import { fileUploader } from "../../../helpars/fileUploader";
-import { IPostFilterRequest, TPost } from "./post.interface";
-import { postSearchAbleFields } from "./post.costant";
+import { IPostFilterRequest, IReportFilterRequest, TPost } from "./post.interface";
+import { postSearchAbleFields, reportSearchAbleFields } from "./post.costant";
 import httpStatus from "http-status";
 
 const createPostIntoDb = async (
@@ -305,6 +305,95 @@ const deletePost = async (postId: string, userId: string) => {
   return { message: "Post deleted successfully" };
 };
 
+const reportPost = async (
+  payload: {
+    message: string;
+    postId: string;
+  },
+  userId: string
+) => {
+  const post = await prisma.post.findUnique({
+    where: { id: payload.postId },
+  });
+
+  if (!post) {
+    throw new ApiError(httpStatus.NOT_FOUND, "post not found");
+  }
+
+  const res = await prisma.reportPost.create({
+    data: { ...payload, userId },
+  });
+
+  return res;
+};
+
+const allReports = async (
+  params: IReportFilterRequest,
+  options: IPaginationOptions
+) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const andCondions: Prisma.ReportPostWhereInput[] = [];
+
+  if (params.searchTerm) {
+    andCondions.push({
+      OR: reportSearchAbleFields.map((field) => ({
+        [field]: {
+          contains: params.searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    andCondions.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    });
+  }
+  const whereConditons: Prisma.ReportPostWhereInput = { AND: andCondions };
+
+  const result = await prisma.reportPost.findMany({
+    where: whereConditons,
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            createdAt: "desc",
+          },
+    include: {
+      user: {
+        select: {
+          email: true,
+          userInfo: { select: { fullName: true, image: true } },
+        },
+      },
+      post: true
+    },
+  });
+  const total = await prisma.reportPost.count({
+    where: whereConditons,
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
+};
+
 export const PostService = {
   createPostIntoDb,
   getPostsFromDb,
@@ -314,4 +403,6 @@ export const PostService = {
   myLikedPost,
   commentAPost,
   getMyPosts,
+  reportPost,
+  allReports,
 };
