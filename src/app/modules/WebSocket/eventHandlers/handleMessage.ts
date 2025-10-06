@@ -11,14 +11,29 @@ export async function handleMessage(ws: ExtendedWebSocket, data: any) {
   });
 
   if (!receiver) {
-    console.log("Receiver not found");
     return;
   }
 
   if (!ws.userId || !receiverId || !message) {
-    console.log("Invalid message payload");
     return;
   }
+
+  const admin = await prisma.user.findFirst({
+    where: { role: "ADMIN", email: "homerd@alphapulsefit.com" },
+    select: { id: true },
+  });
+
+  const nutrition = await prisma.user.findFirst({
+    where: { role: "NUTRITION", email: "nutritionist@gmail.com" },
+    select: { id: true },
+  });
+
+  const senderId =
+    data.type === "TRAINER"
+      ? admin?.id
+      : data.type === "NUTRITION"
+      ? nutrition?.id
+      : ws.userId;
 
   const roomType = "ALL";
 
@@ -26,8 +41,8 @@ export async function handleMessage(ws: ExtendedWebSocket, data: any) {
     where: {
       roomType: type ? type : roomType,
       OR: [
-        { senderId: ws.userId, receiverId },
-        { senderId: receiverId, receiverId: ws.userId },
+        { senderId: senderId, receiverId },
+        { senderId: receiverId, receiverId: senderId },
       ],
     },
   });
@@ -35,7 +50,7 @@ export async function handleMessage(ws: ExtendedWebSocket, data: any) {
   if (!room) {
     room = await prisma.room.create({
       data: {
-        senderId: ws.userId,
+        senderId: senderId!,
         receiverId,
         roomType: type ? type : roomType,
       },
@@ -44,7 +59,7 @@ export async function handleMessage(ws: ExtendedWebSocket, data: any) {
 
   const chat = await prisma.chat.create({
     data: {
-      senderId: ws.userId,
+      senderId: senderId!,
       receiverId,
       roomId: room.id,
       message,

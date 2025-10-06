@@ -327,6 +327,7 @@ model DiscountCode {
 enum UserRole {
   ADMIN
   USER
+  NUTRITION
 }
 
 enum Gender {

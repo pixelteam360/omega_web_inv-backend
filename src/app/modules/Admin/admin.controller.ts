@@ -34,9 +34,18 @@ const getAllDiscountCode = catchAsync(async (req, res) => {
   });
 });
 
+const deleteConversation = catchAsync(async (req, res) => {
+  const result = await AdminService.deleteConversation();
+  sendResponse(res, {
+    message: "All conversation deleted",
+    data: result,
+  });
+});
+
 export const AdminController = {
   dashboardOverView,
   userProgress,
   createDiscountCode,
-  getAllDiscountCode
+  getAllDiscountCode,
+  deleteConversation,
 };

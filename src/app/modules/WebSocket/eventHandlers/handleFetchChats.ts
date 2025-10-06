@@ -6,7 +6,6 @@ const onlineUsers = new Set<string>();
 export async function handleFetchChats(ws: ExtendedWebSocket, data: any) {
   const { receiverId, type } = data;
   if (!ws.userId) {
-    console.log("User not authenticated");
     return;
   }
 

@@ -19,5 +19,6 @@ router
   );
 
 router.get("/user-progress/:id", AdminController.userProgress);
+router.delete("/conversation", AdminController.deleteConversation);
 
 export const AdminRoutes = router;

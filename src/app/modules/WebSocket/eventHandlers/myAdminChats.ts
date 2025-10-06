@@ -5,16 +5,20 @@ const onlineUsers = new Set<string>();
 
 export async function myAdminChats(ws: ExtendedWebSocket, data: any) {
   if (!ws.userId) {
-    console.log("User not authenticated");
     return;
   }
 
   const admin = await prisma.user.findFirst({
-    where: { role: "ADMIN" },
+    where: { role: "ADMIN", email: "homerd@alphapulsefit.com" },
     select: { id: true },
   });
 
-  const receiverId = admin?.id;
+  const nutrition = await prisma.user.findFirst({
+    where: { role: "NUTRITION", email: "nutritionist@gmail.com" },
+    select: { id: true },
+  });
+
+  const receiverId = data.type === "TRAINER" ? admin?.id : nutrition?.id;
 
   const room = await prisma.room.findFirst({
     where: {

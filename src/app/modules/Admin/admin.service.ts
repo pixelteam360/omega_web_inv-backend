@@ -104,9 +104,17 @@ const getAllDiscountCode = async () => {
   return res;
 };
 
+const deleteConversation = async () => {
+  await prisma.chat.deleteMany();
+  await prisma.room.deleteMany();
+
+  return { message: "All conversation deleted" };
+};
+
 export const AdminService = {
   dashboardOverView,
   userProgress,
   createDiscountCode,
   getAllDiscountCode,
+  deleteConversation,
 };

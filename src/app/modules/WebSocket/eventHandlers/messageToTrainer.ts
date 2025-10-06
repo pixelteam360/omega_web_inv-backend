@@ -6,7 +6,7 @@ export async function messageToTrainer(ws: ExtendedWebSocket, data: any) {
   const { message, images } = data;
 
   const nutritionist = await prisma.user.findFirst({
-    where: { role: "ADMIN" },
+    where: { role: "ADMIN", email: "homerd@alphapulsefit.com" },
     select: { id: true },
   });
 
@@ -18,12 +18,10 @@ export async function messageToTrainer(ws: ExtendedWebSocket, data: any) {
   });
 
   if (!receiver) {
-    console.log("Receiver not found");
     return;
   }
 
   if (!ws.userId || !receiverId || !message) {
-    console.log("Invalid message payload");
     return;
   }
 

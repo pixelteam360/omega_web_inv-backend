@@ -9,7 +9,7 @@ export const initiateSuperAdmin = async () => {
     Number(config.bcrypt_salt_rounds)
   );
   const payload: any = {
-    email: "admin@gmail.com",
+    email: "homerd@alphapulsefit.com",
     phone: "123456789",
     birth: "2000-06-09T12:00:00Z",
     activePlan: true,
@@ -17,17 +17,40 @@ export const initiateSuperAdmin = async () => {
     role: UserRole.ADMIN,
   };
 
-  const isExistUser = await prisma.user.findUnique({
+  const nPayload: any = {
+    email: "nutritionist@gmail.com",
+    phone: "123456789",
+    birth: "2000-06-09T12:00:00Z",
+    activePlan: true,
+    password: hashedPassword,
+    role: UserRole.NUTRITION,
+  };
+
+  const isAdminExists = await prisma.user.findUnique({
     where: {
       email: payload.email,
+      role: "ADMIN",
     },
   });
 
-  if (isExistUser) return;
-
-  await prisma.user.create({
-    data: payload,
+  const isNExists = await prisma.user.findUnique({
+    where: {
+      email: nPayload.email,
+      role: "NUTRITION",
+    },
   });
+
+  if (!isAdminExists) {
+    await prisma.user.create({
+      data: payload,
+    });
+  } else if (!isNExists) {
+    await prisma.user.create({
+      data: nPayload,
+    });
+  } else {
+    return;
+  }
 };
 
 export const initiateSubscriptionPlan = async () => {
