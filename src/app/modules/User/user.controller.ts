@@ -64,6 +64,14 @@ const deleteUserWithRelations = catchAsync(async (req, res) => {
   });
 });
 
+const deleteUser = catchAsync(async (req, res) => {
+  const result = await userService.deleteUser(req.params.id);
+  sendResponse(res, {
+    message: "User and all related data deleted successfully",
+    data: result,
+  });
+});
+
 export const userController = {
   createUser,
   getUsers,
@@ -71,5 +79,6 @@ export const userController = {
   updateProfile,
   myWeightProgress,
   blockUser,
-  deleteUserWithRelations
+  deleteUserWithRelations,
+  deleteUser,
 };

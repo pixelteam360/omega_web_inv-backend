@@ -23,6 +23,9 @@ router
   .put(auth(UserRole.ADMIN, UserRole.USER), userController.updateProfile)
   .delete(auth(), userController.deleteUserWithRelations);
 
-router.route("/:id").patch(auth(UserRole.ADMIN), userController.blockUser);
+router
+  .route("/:id")
+  .patch(auth(UserRole.ADMIN), userController.blockUser)
+  .delete(auth(UserRole.ADMIN), userController.deleteUser);
 
 export const UserRoutes = router;

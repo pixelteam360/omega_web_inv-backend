@@ -381,6 +381,96 @@ const deleteUserWithRelations = async (userId: string) => {
   }
 };
 
+const deleteUser = async (userId: string) => {
+  try {
+    // Check if the user exists
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      // 1️⃣ Delete related UserInfo
+      await tx.userInfo.deleteMany({ where: { userId } });
+
+      // 2️⃣ Delete related BodyMeasurements
+      await tx.bodyMeasurement.deleteMany({ where: { userId } });
+
+      // 3️⃣ Delete WeightProgress
+      await tx.weightProgress.deleteMany({ where: { userId } });
+
+      // 4️⃣ Delete DailyGoal
+      await tx.dailyGoal.deleteMany({ where: { userId } });
+
+      // 5️⃣ Delete WorkoutPlans
+      await tx.workoutPlans.deleteMany({ where: { userId } });
+
+      // 6️⃣ Delete MealPlans
+      await tx.mealPlans.deleteMany({ where: { userId } });
+
+      // 7️⃣ Delete Purchased Plans
+      await tx.purchasedPlan.deleteMany({ where: { userId } });
+
+      // 8️⃣ Handle Posts and related records
+      const posts = await tx.post.findMany({ where: { userId } });
+      for (const post of posts) {
+        await tx.postLike.deleteMany({ where: { postId: post.id } });
+        await tx.postComment.deleteMany({ where: { postId: post.id } });
+        await tx.reportPost.deleteMany({ where: { postId: post.id } });
+      }
+      await tx.post.deleteMany({ where: { userId } });
+
+      // 9️⃣ Delete user’s own PostLikes, PostComments, ReportPosts (as actor)
+      await tx.postLike.deleteMany({ where: { userId } });
+      await tx.postComment.deleteMany({ where: { userId } });
+      await tx.reportPost.deleteMany({ where: { userId } });
+
+      // 🔟 Delete chat rooms and messages
+      const rooms = await tx.room.findMany({
+        where: {
+          OR: [{ senderId: userId }, { receiverId: userId }],
+        },
+      });
+
+      for (const room of rooms) {
+        await tx.chat.deleteMany({ where: { roomId: room.id } });
+      }
+
+      await tx.room.deleteMany({
+        where: {
+          OR: [{ senderId: userId }, { receiverId: userId }],
+        },
+      });
+
+      // 1️⃣1️⃣ Delete messages sent/received by user (extra safety)
+      await tx.chat.deleteMany({
+        where: {
+          OR: [{ senderId: userId }, { receiverId: userId }],
+        },
+      });
+
+      // 1️⃣2️⃣ Finally, delete the User
+      await tx.user.delete({
+        where: { id: userId },
+      });
+
+      return { message: "User and all related data deleted successfully" };
+    });
+
+    return { success: true, ...result };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: "An unexpected error occurred!",
+      errorSources: [err.message],
+      err,
+    };
+  }
+};
+
 export const userService = {
   createUserIntoDb,
   getUsersFromDb,
@@ -389,4 +479,5 @@ export const userService = {
   myWeightProgress,
   blockUser,
   deleteUserWithRelations,
+  deleteUser,
 };
