@@ -29,14 +29,12 @@ export const initiateSuperAdmin = async () => {
   const isAdminExists = await prisma.user.findUnique({
     where: {
       email: payload.email,
-      role: "ADMIN",
     },
   });
 
   const isNExists = await prisma.user.findUnique({
     where: {
       email: nPayload.email,
-      role: "NUTRITION",
     },
   });
 
