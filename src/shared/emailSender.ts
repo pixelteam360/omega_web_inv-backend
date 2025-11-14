@@ -16,7 +16,7 @@ export const emailSender = async (
       },
     });
     const mailOptions = {
-      from: `<homerd@alphapulsefit.com>`, 
+      from: `<customersupport@alphapulsefit.com>`, 
       to, 
       subject, 
       text: html.replace(/<[^>]+>/g, ""),
