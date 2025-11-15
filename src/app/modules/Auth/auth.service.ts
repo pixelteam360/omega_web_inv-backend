@@ -132,10 +132,7 @@ const forgotPassword = async (payload: { email: string }) => {
         <div style="text-align: center; margin-top: 30px;">
             <p style="font-size: 12px; color: #999;">
                 Best Regards,<br/>
-                <span style="font-weight: bold; color: #FB4958;">Alpha Pulse</span><br/>
-                <a href="mailto:support@nmbull.com" style="color: #FB4958; text-decoration: none; font-weight: bold;">
-                    Contact Support
-                </a>
+                <span style="font-weight: bold; color: #FB4958;">AlphaPulse</span><br/>
             </p>
         </div>
     </div>
@@ -143,7 +140,7 @@ const forgotPassword = async (payload: { email: string }) => {
 `;
 
   // Send the OTP email to the user
-  await emailSender(userData.email, html, "Forgot Password OTP");
+  await emailSender(userData.email, html, "Password Reset Verification Code");
 
   // Update the user's OTP and expiration in the database
   await prisma.user.update({
@@ -202,10 +199,7 @@ const html = `
         <div style="text-align: center; margin-top: 30px;">
             <p style="font-size: 12px; color: #999;">
                 Best Regards,<br/>
-                <span style="font-weight: bold; color: #FB4958;">Alpha Pulse</span><br/>
-                <a href="mailto:support@booksy.buzz" style="color: #FB4958; text-decoration: none; font-weight: bold;">
-                    Contact Support
-                </a>
+                <span style="font-weight: bold; color: #FB4958;">AlphaPulse</span><br/>
             </p>
         </div>
 

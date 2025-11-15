@@ -63,7 +63,7 @@ const createUserIntoDb = async (payload: TUser) => {
       <div style="text-align: center; margin-top: 20px;">
           <p style="font-size: 12px; color: #777;">
               Kind Regards,<br/>
-              <span style="font-weight: bold; color: #FB4958;">Alpha Pulse Team</span><br/>
+              <span style="font-weight: bold; color: #FB4958;">AlphaPulse Team</span><br/>
           </p>
       </div>
 
@@ -102,7 +102,7 @@ const createUserIntoDb = async (payload: TUser) => {
       },
     });
 
-    await emailSender(userData.email, html, "Verify you email");
+    await emailSender(userData.email, html, "Your AlphaPulse Verification Code");
 
     await prisma.user.update({
       where: { id: userData.id },
