@@ -5,12 +5,16 @@ import { sendNotification } from "../Notification/notification.service";
 import { TDiscountCode } from "./admin.interface";
 
 const dashboardOverView = async () => {
-  const users = await prisma.user.count();
+  const users = await prisma.user.count({
+    where: { role: { notIn: ["ADMIN", "NUTRITION"] } },
+  });
   const plans = await prisma.plan.count();
   const fitnessGoal = await prisma.fitnessGoal.count();
   const workout = await prisma.workout.count();
   const nutrition = await prisma.nutrition.count();
-  const progress = await prisma.user.count();
+  const progress = await prisma.user.count({
+    where: { role: { notIn: ["ADMIN", "NUTRITION"] } },
+  });
   const trainerSupport = await prisma.room.count({
     where: { roomType: "TRAINER" },
   });
