@@ -102,7 +102,11 @@ const createUserIntoDb = async (payload: TUser) => {
       },
     });
 
-    await emailSender(userData.email, html, "Your AlphaPulse Verification Code");
+    await emailSender(
+      userData.email,
+      html,
+      "Your AlphaPulse Verification Code"
+    );
 
     await prisma.user.update({
       where: { id: userData.id },
@@ -155,7 +159,7 @@ const getUsersFromDb = async (
   const whereConditons: Prisma.UserWhereInput = { AND: andCondions };
 
   const result = await prisma.user.findMany({
-    where: whereConditons,
+    where: { ...whereConditons, role: { notIn: ["ADMIN", "NUTRITION"] } },
     skip,
     take: limit,
     orderBy:
@@ -175,7 +179,7 @@ const getUsersFromDb = async (
     },
   });
   const total = await prisma.user.count({
-    where: whereConditons,
+    where: { ...whereConditons, role: { notIn: ["ADMIN", "NUTRITION"] } },
   });
   const paid = await prisma.user.count({
     where: { ...whereConditons, activePlan: true },
