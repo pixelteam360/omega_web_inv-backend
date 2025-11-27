@@ -18,7 +18,10 @@ router
     AdminController.createDiscountCode
   );
 
-router.get("/user-progress/:id", AdminController.userProgress);
 router.delete("/conversation", AdminController.deleteConversation);
+router
+  .route("/admin-ids")
+  .get(auth(UserRole.ADMIN, UserRole.NUTRITION), AdminController.adminIds);
+router.get("/user-progress/:id", AdminController.userProgress);
 
 export const AdminRoutes = router;

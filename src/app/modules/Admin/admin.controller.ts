@@ -42,10 +42,19 @@ const deleteConversation = catchAsync(async (req, res) => {
   });
 });
 
+const adminIds = catchAsync(async (req, res) => {
+  const result = await AdminService.adminIds();
+  sendResponse(res, {
+    message: "Admin Ids",
+    data: result,
+  });
+});
+
 export const AdminController = {
   dashboardOverView,
   userProgress,
   createDiscountCode,
   getAllDiscountCode,
   deleteConversation,
+  adminIds
 };

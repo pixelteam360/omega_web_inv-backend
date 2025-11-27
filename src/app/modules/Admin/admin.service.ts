@@ -115,10 +115,24 @@ const deleteConversation = async () => {
   return { message: "All conversation deleted" };
 };
 
+const adminIds = async () => {
+  const admin = await prisma.user.findFirst({
+    where: { role: "ADMIN" },
+    select: { id: true },
+  });
+  const nutrition = await prisma.user.findFirst({
+    where: { role: "NUTRITION" },
+    select: { id: true },
+  });
+
+  return { adminId: admin?.id, nutritionId: nutrition?.id };
+};
+
 export const AdminService = {
   dashboardOverView,
   userProgress,
   createDiscountCode,
   getAllDiscountCode,
   deleteConversation,
+  adminIds
 };
