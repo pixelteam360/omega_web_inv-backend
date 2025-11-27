@@ -11,7 +11,7 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(PostController.getPosts)
+  .get(auth(), PostController.getPosts)
   .post(
     auth(UserRole.USER, UserRole.ADMIN),
     fileUploader.post,

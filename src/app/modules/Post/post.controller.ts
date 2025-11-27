@@ -27,7 +27,7 @@ const createPost = catchAsync(async (req, res) => {
 const getPosts = catchAsync(async (req, res) => {
   const filters = pick(req.query, postFilterableFields);
   const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
-  const result = await PostService.getPostsFromDb(filters, options);
+  const result = await PostService.getPostsFromDb(filters, options, req.user.id);
   sendResponse(res, {
     message: "Posts retrieve successfully!",
     data: result,

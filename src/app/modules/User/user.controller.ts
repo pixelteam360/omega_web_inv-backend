@@ -72,6 +72,14 @@ const deleteUser = catchAsync(async (req, res) => {
   });
 });
 
+const UserToUserBlock = catchAsync(async (req, res) => {
+  const result = await userService.UserToUserBlock(req.user.id, req.params.id);
+  sendResponse(res, {
+    message: "User blocked successfully",
+    data: result,
+  });
+});
+
 export const userController = {
   createUser,
   getUsers,
@@ -81,4 +89,5 @@ export const userController = {
   blockUser,
   deleteUserWithRelations,
   deleteUser,
+  UserToUserBlock,
 };

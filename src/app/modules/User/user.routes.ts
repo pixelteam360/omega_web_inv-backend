@@ -28,4 +28,8 @@ router
   .patch(auth(UserRole.ADMIN), userController.blockUser)
   .delete(auth(UserRole.ADMIN), userController.deleteUser);
 
+router
+  .route("/block/:id")
+  .post(auth(UserRole.USER), userController.UserToUserBlock);
+
 export const UserRoutes = router;

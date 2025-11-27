@@ -39,6 +39,8 @@ model User {
   sentMessages     Chat[]            @relation("ChatSender")
   receivedMessages Chat[]            @relation("ChatReceiver")
   reportPost       ReportPost[]
+  blockedId        BlokeList[]       @relation("BlockedRelation")
+  blockerId        BlokeList[]       @relation("BlockerRelation")
 
   @@map("Users")
 }
@@ -268,6 +270,16 @@ model ReportPost {
   post      Post     @relation(fields: [postId], references: [id])
 
   @@map("Report-Post")
+}
+
+model BlokeList {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  user      User   @relation("BlockedRelation", fields: [blockedId], references: [id])
+  blockedId String @db.ObjectId
+  blocker   User   @relation("BlockerRelation", fields: [blockerId], references: [id])
+  blockerId String @db.ObjectId
+
+  @@map("Bloke-List")
 }
 
 model Notification {

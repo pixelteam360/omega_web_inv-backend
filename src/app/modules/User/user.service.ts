@@ -483,6 +483,23 @@ const deleteUser = async (userId: string) => {
   }
 };
 
+const UserToUserBlock = async (myId: string, userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  await prisma.blokeList.create({
+    data: { blockerId: myId, blockedId: userId },
+  });
+
+  return { message: "User blocked successfully" };
+};
+
 export const userService = {
   createUserIntoDb,
   getUsersFromDb,
@@ -492,4 +509,5 @@ export const userService = {
   blockUser,
   deleteUserWithRelations,
   deleteUser,
+  UserToUserBlock
 };

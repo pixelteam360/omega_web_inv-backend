@@ -4,7 +4,11 @@ import { IPaginationOptions } from "../../../interfaces/paginations";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 import { Prisma, Post } from "@prisma/client";
 import { fileUploader } from "../../../helpars/fileUploader";
-import { IPostFilterRequest, IReportFilterRequest, TPost } from "./post.interface";
+import {
+  IPostFilterRequest,
+  IReportFilterRequest,
+  TPost,
+} from "./post.interface";
 import { postSearchAbleFields, reportSearchAbleFields } from "./post.costant";
 import httpStatus from "http-status";
 
@@ -52,7 +56,8 @@ const createPostIntoDb = async (
 
 const getPostsFromDb = async (
   params: IPostFilterRequest,
-  options: IPaginationOptions
+  options: IPaginationOptions,
+  userId: string
 ) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = params;
@@ -81,8 +86,18 @@ const getPostsFromDb = async (
   }
   const whereConditons: Prisma.PostWhereInput = { AND: andCondions };
 
+  const blockList = await prisma.blokeList.findMany({
+    where: { blockerId: userId },
+  });
+
+  const blockedUser = blockList.map((item) => item.blockedId);
+
   const result = await prisma.post.findMany({
-    where: { ...whereConditons, isDeleted: false },
+    where: {
+      ...whereConditons,
+      isDeleted: false,
+      userId: { notIn: blockedUser },
+    },
     skip,
     take: limit,
     orderBy:
@@ -112,7 +127,11 @@ const getPostsFromDb = async (
     },
   });
   const total = await prisma.post.count({
-    where: { ...whereConditons, isDeleted: false },
+    where: {
+      ...whereConditons,
+      isDeleted: false,
+      userId: { notIn: blockedUser },
+    },
   });
 
   return {
@@ -377,7 +396,7 @@ const allReports = async (
           userInfo: { select: { fullName: true, image: true } },
         },
       },
-      post: true
+      post: { include: { user: { select: { email: true } } } },
     },
   });
   const total = await prisma.reportPost.count({
