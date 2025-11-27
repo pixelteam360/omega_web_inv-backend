@@ -18,7 +18,6 @@ export async function messageToNutritionist(ws: ExtendedWebSocket, data: any) {
   });
 
   if (!receiver) {
-    console.log("Receiver not found");
     return;
   }
 

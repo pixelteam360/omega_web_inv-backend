@@ -14,7 +14,7 @@ export async function adminMessageList(
     const rooms = await prisma.room.findMany({
       where: {
         roomType: type,
-        OR: [{ senderId: ws.userId }, { receiverId: ws.userId }],
+        // OR: [{ senderId: ws.userId }, { receiverId: ws.userId }],
       },
       include: {
         chat: {
