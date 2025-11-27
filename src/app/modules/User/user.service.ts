@@ -426,6 +426,10 @@ const deleteUser = async (userId: string) => {
       // 7️⃣ Delete Purchased Plans
       await tx.purchasedPlan.deleteMany({ where: { userId } });
 
+      await tx.blokeList.deleteMany({
+        where: { OR: [{ blockedId: userId }, { blockerId: userId }] },
+      });
+
       // 8️⃣ Handle Posts and related records
       const posts = await tx.post.findMany({ where: { userId } });
       for (const post of posts) {
@@ -509,5 +513,5 @@ export const userService = {
   blockUser,
   deleteUserWithRelations,
   deleteUser,
-  UserToUserBlock
+  UserToUserBlock,
 };
