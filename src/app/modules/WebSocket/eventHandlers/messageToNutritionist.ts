@@ -5,7 +5,7 @@ import { userSockets } from "./authenticate";
 export async function messageToNutritionist(ws: ExtendedWebSocket, data: any) {
   const { message, images } = data;
 
-  const nutritionist = await prisma.user.findUnique({
+  const nutritionist = await prisma.user.findFirst({
     where: { role: "NUTRITION", email: "nutritionist@gmail.com" },
     select: { id: true },
   });

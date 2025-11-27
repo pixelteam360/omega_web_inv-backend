@@ -11,12 +11,27 @@ export async function handleFetchChats(ws: ExtendedWebSocket, data: any) {
 
   const roomType = type ? type : "ALL";
 
+  const nutritionist = await prisma.user.findFirst({
+    where: { role: "NUTRITION", email: "nutritionist@gmail.com" },
+    select: { id: true },
+  });
+
+  const admin = await prisma.user.findFirst({
+    where: { role: "ADMIN", email: "homerd@alphapulsefit.com" },
+    select: { id: true, role: true },
+  });
+
+  const myId =
+    roomType === "NUTRITION" && admin?.role === "ADMIN"
+      ? nutritionist?.id
+      : ws.userId;
+
   const room = await prisma.room.findFirst({
     where: {
       roomType,
       OR: [
-        { senderId: ws.userId, receiverId },
-        { senderId: receiverId, receiverId: ws.userId },
+        { senderId: myId, receiverId },
+        { senderId: receiverId, receiverId: myId },
       ],
     },
   });
